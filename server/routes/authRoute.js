@@ -4,10 +4,10 @@ const router = express.Router();
 // import from contollers
 const authController = require('../controllers/authController');
 
-// @Method
+// @Method  POST
 // @Desc
 // @Role
 
-router.route('/register').get(authController.register);
+router.route('/register').post(authController.register);
 
 module.exports = router;
