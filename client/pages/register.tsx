@@ -65,6 +65,12 @@ const Register: FC = () => {
               minLength: {
                 value: 6,
                 message: 'Please set password more than  equal 6 characters'
+              },
+              validate: (value) => {
+                return (
+                  value.replace(/\s+/g, '').length >= 6 ||
+                  'Do not enter blank space. Please set password more than  equal 6 characters'
+                );
               }
             })}>
             Password
