@@ -1,5 +1,5 @@
 import next from 'next';
-import React, { FC, Fragment, useEffect } from 'react';
+import React, { FC, Fragment, useEffect, ReactNode } from 'react';
 
 // Next.js
 import Head from 'next/head';
@@ -11,7 +11,7 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 
 interface HeaderProps {
-  children: string;
+  children: string | ReactNode;
 }
 
 const handleStart = (url: string) => {
