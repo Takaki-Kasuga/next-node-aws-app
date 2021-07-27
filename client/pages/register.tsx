@@ -15,6 +15,7 @@ interface RegisterFormType {
 
 const Register: FC = () => {
   const {
+    reset,
     register,
     handleSubmit,
     watch,
@@ -24,6 +25,7 @@ const Register: FC = () => {
   const onSubmit: SubmitHandler<RegisterFormType> = (formData) => {
     console.log('通過しました。');
     console.table(formData);
+    reset();
   };
   return (
     <Header>
