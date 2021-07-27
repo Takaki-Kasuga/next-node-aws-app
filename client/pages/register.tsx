@@ -64,7 +64,7 @@ const Register: FC = () => {
               required: 'Please input your password',
               minLength: {
                 value: 6,
-                message: 'Please set password more than  equal 6 characters'
+                message: 'Please set password more than equal 6 characters'
               },
               validate: (value) => {
                 return (
