@@ -31,7 +31,7 @@ const InputText: FC<InputTextProps> = ({
         {children}
       </label>
       <input
-        className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
+        className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
         id={id}
         autoComplete='on'
         {...register}
