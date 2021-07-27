@@ -1,14 +1,17 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 
+const dotenv = require('dotenv');
+const connectDB = require('./database/db');
 // added env settings
 dotenv.config();
 console.log('dotenv.config();', dotenv.config());
 
 const app = express();
+
+// mongoDB
+connectDB();
 
 // import routes
 const authRouter = require('./routes/authRoute');
