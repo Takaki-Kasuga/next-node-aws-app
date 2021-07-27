@@ -8,6 +8,9 @@ const authRouter = require('./routes/authRoute');
 // notificate http request
 app.use(morgan('dev'));
 
+// parse request json data
+app.use(express.json({ extended: false }));
+
 // middlewares
 app.use('/api/auth', authRouter);
 
