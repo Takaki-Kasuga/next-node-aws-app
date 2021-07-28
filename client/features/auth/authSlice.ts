@@ -5,15 +5,13 @@ import { RootState } from '../../app/store';
 import { setAlert, removeAlertAsync } from '../alert/alertSlice';
 
 // npm package
-import { AxiosError } from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 // import API
 import { registerUserAPI } from './authAPI';
 
-const isAxiosError = (error: any): error is AxiosError => {
-  return !!error.isAxiosError;
-};
+// helper
+import { isArray, isAxiosError } from '../../helpers/errorHandling';
 
 // Define a type for the slice state
 interface authState {
@@ -46,8 +44,32 @@ export const registerUserAsync = createAsyncThunk<any, any, any>(
         console.log('Axiosのエラー');
         console.log('error.isAxiosError', error.isAxiosError);
         console.log('error', error.response);
-        dispatch(setAlert({ id, message, alertTypeBgColorName: 'bg-red-400' }));
-        dispatch(removeAlertAsync({ id, timeout: 100000 }));
+
+        if (isArray(errorObject!.data.errors)) {
+          errorObject!.data.errors.forEach(
+            (error: {
+              location: string;
+              msg: string;
+              param: string;
+              value: string;
+            }) => {
+              dispatch(
+                setAlert({
+                  id,
+                  message: error.msg,
+                  alertTypeBgColorName: 'bg-red-400'
+                })
+              );
+              dispatch(removeAlertAsync({ id, timeout: 5000 }));
+            }
+          );
+        } else {
+          dispatch(
+            setAlert({ id, message, alertTypeBgColorName: 'bg-red-400' })
+          );
+          dispatch(removeAlertAsync({ id, timeout: 5000 }));
+        }
+
         return rejectWithValue({
           status: errorObject!.status,
           message: errorObject!.data.message
