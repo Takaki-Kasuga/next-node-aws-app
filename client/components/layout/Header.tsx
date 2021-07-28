@@ -6,6 +6,9 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
 
+// components
+import { Alert } from '../../helpers/index';
+
 // npm package
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -63,6 +66,7 @@ const Header: FC<HeaderProps> = ({ children }) => {
           </Link>
         </li>
       </ul>
+      <Alert />
       <div className='container mx-auto py-5'>{children}</div>
     </Fragment>
   );

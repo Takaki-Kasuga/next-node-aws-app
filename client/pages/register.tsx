@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import { useAppDispatch } from '../app/hooks';
 
 // components
 import { Header } from '../components/layout/index';
@@ -7,6 +8,9 @@ import { InputText } from '../components/forms/index';
 // npm package
 import { useForm, SubmitHandler } from 'react-hook-form';
 
+// slice
+import { registerUserAsync } from '../features/auth/authSlice';
+
 interface RegisterFormType {
   name: string;
   email: string;
@@ -14,6 +18,7 @@ interface RegisterFormType {
 }
 
 const Register: FC = () => {
+  const dispatch = useAppDispatch();
   const {
     reset,
     register,
@@ -26,6 +31,7 @@ const Register: FC = () => {
     console.log('通過しました。');
     console.table(formData);
     reset();
+    dispatch(registerUserAsync(formData));
   };
   return (
     <Header>
