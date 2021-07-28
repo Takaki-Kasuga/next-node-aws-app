@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { API } from '../../config/config';
 
 interface RegisterUserAPITypes {
   name: string;
@@ -18,5 +19,5 @@ export const registerUserAPI = ({
   };
   const body = JSON.stringify({ name, email, password });
 
-  return axios.post('http://localhost:8000/api/auth/register', body, config);
+  return axios.post(`${API}/auth/register`, body, config);
 };

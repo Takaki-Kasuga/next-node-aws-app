@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
 
 // components
-import { Alert } from '../../helpers/index';
+import { Alert } from '../helpers/index';
 
 // npm package
 import NProgress from 'nprogress';

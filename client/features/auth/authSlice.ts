@@ -32,7 +32,7 @@ export const registerUserAsync = createAsyncThunk<any, any, any>(
       const response = await registerUserAPI(registerFormData);
       const id = uuidv4();
       const message = response.data.message;
-      dispatch(setAlert({ id, message, alertTypeBgColorName: 'bg-green-300' }));
+      dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
       dispatch(removeAlertAsync({ id, timeout: 100000 }));
       return response.data;
     } catch (error) {
@@ -57,16 +57,14 @@ export const registerUserAsync = createAsyncThunk<any, any, any>(
                 setAlert({
                   id,
                   message: error.msg,
-                  alertTypeBgColorName: 'bg-red-400'
+                  alertTypeBgColorName: 'black'
                 })
               );
               dispatch(removeAlertAsync({ id, timeout: 5000 }));
             }
           );
         } else {
-          dispatch(
-            setAlert({ id, message, alertTypeBgColorName: 'bg-red-400' })
-          );
+          dispatch(setAlert({ id, message, alertTypeBgColorName: 'red-400' }));
           dispatch(removeAlertAsync({ id, timeout: 5000 }));
         }
 

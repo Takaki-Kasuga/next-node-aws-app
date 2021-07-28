@@ -1,8 +1,8 @@
 import React, { FC, Fragment } from 'react';
-import { useAppSelector } from '../app/hooks';
+import { useAppSelector } from '../../app/hooks';
 
 // slice
-import { alertState } from '../features/alert/alertSlice';
+import { alertState } from '../../features/alert/alertSlice';
 
 const Alert: FC = () => {
   const alert = useAppSelector(alertState);
@@ -14,9 +14,8 @@ const Alert: FC = () => {
           return (
             <div
               key={alertItem.id}
-              className={`container mx-auto mt-3 p-5 rounded w-9/12 ${alertItem.alertTypeBgColorName}`}>
-              <p className={'text-white'}>{alertItem.message}</p>
-              {/* <i className='text-white fas fa-times-circle'></i> */}
+              className={`bg-${alertItem.alertTypeBgColorName} container mx-auto mt-3 p-5  rounded w-9/12`}>
+              <p className='text-black'>{alertItem.message}</p>
             </div>
           );
         })}
