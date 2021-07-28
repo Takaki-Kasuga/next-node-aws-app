@@ -9,16 +9,15 @@ const Alert: FC = () => {
 
   return (
     <Fragment>
-      {alert.alertStatus.length > 0 &&
-        alert.alertStatus.map((alertItem) => {
-          return (
+      {alert.alertStatus.length !== 0
+        ? alert.alertStatus.map((alertItem) => (
             <div
               key={alertItem.id}
               className={`bg-${alertItem.alertTypeBgColorName} container mx-auto mt-3 p-5  rounded w-9/12`}>
               <p className='text-black'>{alertItem.message}</p>
             </div>
-          );
-        })}
+          ))
+        : null}
     </Fragment>
   );
 };

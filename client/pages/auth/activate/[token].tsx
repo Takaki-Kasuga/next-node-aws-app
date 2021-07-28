@@ -35,6 +35,7 @@ const ActivateAccount: FC<{ router: string }> = () => {
 
   const activateAccount = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
+    // token dispatch to http://localhost:8000/api/auth/register/activate
   };
 
   return (

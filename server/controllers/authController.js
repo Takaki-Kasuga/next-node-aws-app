@@ -1,6 +1,8 @@
 const User = require('../models/user');
 const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const { nanoid } = require('nanoid');
 
 // helpers
 const { registerEnailParams } = require('../helpers/email');
@@ -28,7 +30,7 @@ exports.register = async (req, res) => {
     console.log('user', user);
     if (user)
       return res
-        .status(400)
+        .status(401)
         .json({ message: 'Email is taken', status: 'failed' });
 
     // generate token with user email and _password
@@ -70,43 +72,106 @@ exports.register = async (req, res) => {
   }
 };
 
-// User.findOne({ email }).exec(function (err, user) {
-//   console.log('exec/error', err);
-//   console.log('exec/user', user);
+// @Method     POST
+// @API ROUTE  /api/auth/register/activate
+// @Desc       Register activate for user and cerate new user save mongoDB
+exports.registerActivate = async (req, res) => {
+  const { token } = req.body;
+  console.log('token', token);
+  try {
+    const { name, email, password } = jwt.decode(token);
+    console.log('jwt.decode(token);', jwt.decode(token));
 
-//   // user have been registerd
-//   if (user)
-//     return res
-//       .status(400)
-//       .json({ message: 'Email is taken', status: 'failed' });
+    // create unique 12 character
+    const username = nanoid(12);
 
-//   // generate token with user email and _password
-//   const token = jwt.sign(
-//     { name, email, password },
-//     process.env.JWT_ACCOUNT_ACTIVATION,
-//     {
-//       expiresIn: '10m'
-//     }
-//   );
+    const user = await User.findOne({ email });
+    console.log('user', user);
+    if (user)
+      return res
+        .status(401)
+        .json({ message: 'Email is taken', status: 'failed' });
 
-//   // Send email
-//   const params = registerEnailParams(email, token);
+    // create salt for bycrypt
+    const salt = await bcrypt.genSalt(10);
+    // create hash password
+    const hashed_password = await bcrypt.hash(password, salt);
 
-//   const sendEmailOnRegister = ses.sendEmail(params).promise();
-//   sendEmailOnRegister
-//     .then((data) => {
-//       console.log('Email submitted to SES', data);
-//       res.status(200).json({
-//         message: `Email has been sent to ${email}, Follow the instruction to complete your registration`,
-//         status: 'success'
-//       });
-//     })
-//     .catch((error) => {
-//       console.log('SES email on register', error);
-//       res.status(401).json({
-//         errors: error,
-//         message: `Email has been sent to ${email}, Follow the instruction to complete your registration`,
-//         status: 'failed'
-//       });
-//     });
-// });
+    // create new user
+    const dbUser = new User({
+      username,
+      name,
+      email,
+      hashed_password,
+      salt
+    });
+
+    console.log('dbUser', dbUser);
+
+    const saveUser = await dbUser.save();
+    console.log('saveUser', saveUser);
+    res
+      .status(200)
+      .json({ message: 'Registration success', status: 'success' });
+  } catch (error) {
+    res.status(500).json({
+      errors: error,
+      message: 'Server error.',
+      status: 'failed'
+    });
+  }
+};
+
+// @Method     POST
+// @API ROUTE  /api/auth/login
+// @Desc       Login user
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+
+  console.log('ここまできているよ');
+  try {
+    const user = await User.findOne({ email: email });
+    console.log('DBから一致するオブジェクトを見つけたお。');
+    if (!user)
+      return res.status(401).json({
+        message:
+          'You has not registerd in App yet. Please register in this application.',
+        status: 'failed'
+      });
+    console.log('user', user);
+    const isMatch = await bcrypt.compare(password, user.hashed_password);
+    if (!isMatch)
+      return res.status(500).json({
+        message:
+          'Password is not your password you have been registered. Please try again.',
+        status: 'failed'
+      });
+
+    // generate token with mongo ObjectId（this is access token）
+    const token = jwt.sign(
+      { _id: user._id },
+      process.env.JWT_ACCOUNT_ACTIVATION,
+      {
+        expiresIn: '7d'
+      }
+    );
+
+    res.status(201).json({
+      message: 'You succeeded in logining this application.',
+      status: 'success',
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      errors: error,
+      message: 'Server error.',
+      status: 'failed'
+    });
+  }
+};

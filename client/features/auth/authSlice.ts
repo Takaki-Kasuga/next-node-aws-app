@@ -57,7 +57,7 @@ export const registerUserAsync = createAsyncThunk<any, any, any>(
                 setAlert({
                   id,
                   message: error.msg,
-                  alertTypeBgColorName: 'black'
+                  alertTypeBgColorName: 'yellow-200'
                 })
               );
               dispatch(removeAlertAsync({ id, timeout: 5000 }));
