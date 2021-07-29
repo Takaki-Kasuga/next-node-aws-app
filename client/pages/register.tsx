@@ -1,7 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useAppDispatch } from '../app/hooks';
-import Link from 'next/link';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 
 // components
 import { Header } from '../components/layout/index';
@@ -13,6 +12,9 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 // slice
 import { registerUserAsync } from '../features/auth/authSlice';
 
+// helper function
+import { isAuth } from '../helpers/storageToken';
+
 interface RegisterFormType {
   name: string;
   email: string;
@@ -20,6 +22,7 @@ interface RegisterFormType {
 }
 
 const Register: FC = () => {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const {
     reset,
@@ -35,6 +38,11 @@ const Register: FC = () => {
     reset();
     dispatch(registerUserAsync(formData));
   };
+
+  useEffect(() => {
+    isAuth() && router.push('/');
+  }, [router]);
+
   return (
     <Header>
       <form

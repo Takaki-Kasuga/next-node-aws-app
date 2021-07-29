@@ -1,5 +1,6 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { useAppDispatch } from '../app/hooks';
+import { useRouter } from 'next/router';
 
 // components
 import { Header } from '../components/layout/index';
@@ -11,12 +12,16 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 // slice
 import { loginUserAsync } from '../features/auth/authSlice';
 
+// helper function
+import { isAuth } from '../helpers/storageToken';
+
 interface LoginFormType {
   email: string;
   password: string;
 }
 
 const Login: FC = () => {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const {
     reset,
@@ -32,6 +37,11 @@ const Login: FC = () => {
     reset();
     dispatch(loginUserAsync(formData));
   };
+
+  useEffect(() => {
+    isAuth() && router.push('/');
+  }, [router]);
+
   return (
     <Header>
       <form
@@ -49,6 +59,7 @@ const Login: FC = () => {
             Email adress
           </InputText>
         </div>
+        {JSON.stringify(isAuth())}
         <div className='mb-4'>
           <InputText
             id='password'

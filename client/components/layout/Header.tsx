@@ -13,6 +13,9 @@ import { Alert } from '../helpers/index';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 
+// helper function
+import { isAuth, logout } from '../../helpers/storageToken';
+
 interface HeaderProps {
   children: string | ReactNode;
 }
@@ -55,16 +58,46 @@ const Header: FC<HeaderProps> = ({ children }) => {
             <a className='text-blue-50 hover:text-blue-800 '>Home</a>
           </Link>
         </li>
-        <li className='mr-6'>
-          <Link href='/login'>
-            <a className='text-blue-50 hover:text-blue-800'>Login</a>
-          </Link>
-        </li>
-        <li className='mr-6'>
-          <Link href='/register'>
-            <a className='text-blue-50 hover:text-blue-800'>Register</a>
-          </Link>
-        </li>
+        {!isAuth() ? (
+          <Fragment>
+            <li className='mr-6'>
+              <Link href='/login'>
+                <a className='text-blue-50 hover:text-blue-800'>Login</a>
+              </Link>
+            </li>
+            <li className='mr-6'>
+              <Link href='/register'>
+                <a className='text-blue-50 hover:text-blue-800'>Register</a>
+              </Link>
+            </li>
+          </Fragment>
+        ) : null}
+
+        {isAuth() && isAuth().role === 'admin' ? (
+          <li className='ml-auto'>
+            <Link href='/admin'>
+              <a className='text-blue-50 hover:text-blue-800'>
+                Admin: {isAuth().name}
+              </a>
+            </Link>
+          </li>
+        ) : null}
+        {isAuth() && isAuth().role === 'subscriber' ? (
+          <li className='ml-auto'>
+            <Link href='/user'>
+              <a className='text-blue-50 hover:text-blue-800'>
+                User: {isAuth().name}
+              </a>
+            </Link>
+          </li>
+        ) : null}
+        {isAuth() ? (
+          <li className='mx-6'>
+            <a onClick={logout} className='text-blue-50 hover:text-blue-800'>
+              Logout
+            </a>
+          </li>
+        ) : null}
       </ul>
       <Alert />
       <div className='container mx-auto py-5'>{children}</div>

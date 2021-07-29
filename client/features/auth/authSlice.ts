@@ -20,7 +20,7 @@ import { registerUserAPI, loginUserAPI } from './authAPI';
 import { isArray, isAxiosError } from '../../helpers/axiosError';
 import { errorAlert } from '../../helpers/errorAlert';
 import { prepareErrorData } from '../../helpers/prepareErrorData';
-import { authenticate } from '../../helpers/storageToken';
+import { authenticate, isAuth } from '../../helpers/storageToken';
 
 // Define a type for the slice state
 interface AuthState {
@@ -146,7 +146,9 @@ export const loginUserAsync = createAsyncThunk<
       dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
       dispatch(removeAlertAsync({ id, timeout: 5000 }));
       authenticate(response.data, () => {
-        return Router.push('/');
+        return isAuth() && isAuth().role === 'admin'
+          ? Router.push('/admin')
+          : Router.push('/user');
       });
       return response.data;
     } catch (error) {

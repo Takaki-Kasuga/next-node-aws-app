@@ -1,5 +1,6 @@
 import cookie from 'js-cookie';
 import { LoginReturnData } from '../features/auth/authSlice';
+import Router from 'next/router';
 interface callbackType {
   (): void;
 }
@@ -70,6 +71,14 @@ export const isAuth = () => {
       } else {
         return false;
       }
+    } else {
+      return false;
     }
   }
+};
+
+export const logout = () => {
+  removeCokkie('token');
+  removeStorage('user');
+  Router.push('/login');
 };
