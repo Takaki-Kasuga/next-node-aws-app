@@ -1,6 +1,8 @@
 import cookie from 'js-cookie';
-import { LoginReturnData } from '../features/auth/authSlice';
+import nookies from 'nookies';
+import { NextPageContext } from 'next';
 import Router from 'next/router';
+import { LoginReturnData } from '../features/auth/authSlice';
 interface callbackType {
   (): void;
 }
@@ -32,11 +34,23 @@ export const removeCokkie = (key: string) => {
 
 // get from cookie such as stored token
 // will be useful when we need to make request to server with auth token
-export const getCokkie = (key: string) => {
-  console.log('process.browser', process.browser);
-  if (process.browser) {
-    return cookie.get(key);
+
+export const getCookieFromBrowser = (key: string) => {
+  return cookie.get(key);
+};
+export const getCookieFromServer = (ctx: NextPageContext) => {
+  if (nookies.get(ctx).token) {
+    return nookies.get(ctx).token;
+  } else {
+    return false;
   }
+};
+
+export const getCokkie = (key: string | null, ctx?: NextPageContext) => {
+  console.log('process.browser', process.browser);
+  return process.browser
+    ? getCookieFromBrowser(key!)
+    : getCookieFromServer(ctx!);
 };
 
 // set in localstorage
