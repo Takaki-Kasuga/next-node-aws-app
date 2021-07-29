@@ -12,9 +12,7 @@ const {
 const {
   confirmVerifyJsonWebToken
 } = require('../middlewares/jsonWebToken/confirmVerifyToken');
-const {
-  decodedTokenIntoMiddleware
-} = require('../middlewares/jsonWebToken/decodedTokenIntoMiddleware');
+
 const { runValidation } = require('../middlewares/validators/index');
 
 // @Method  POST
@@ -33,10 +31,10 @@ router
   .route('/login')
   .post(userLoginValidator, runValidation, authController.login);
 
-router.route('/secret').get(decodedTokenIntoMiddleware, (req, res) => {
-  res.status(200).json({
-    data: 'This is secert'
-  });
-});
+// router.route('/secret').get(...UseJwt(), (req, res) => {
+//   res.status(200).json({
+//     data: 'This is secert'
+//   });
+// });
 
 module.exports = router;

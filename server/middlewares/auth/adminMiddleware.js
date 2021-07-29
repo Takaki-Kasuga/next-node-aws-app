@@ -1,6 +1,8 @@
 const User = require('../../models/user');
 
 exports.adminMiddleware = async (req, res, next) => {
+  console.log('adminMiddleware');
+  console.log('req.user', req.user);
   const adminUserId = req.user._id;
   try {
     const user = await User.findOne({ _id: adminUserId });
