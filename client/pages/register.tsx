@@ -1,5 +1,7 @@
 import React, { FC } from 'react';
 import { useAppDispatch } from '../app/hooks';
+import Link from 'next/link';
+import Router from 'next/router';
 
 // components
 import { Header } from '../components/layout/index';
@@ -65,7 +67,7 @@ const Register: FC = () => {
         <div className='mb-4'>
           <InputText
             id='password'
-            inputType='text'
+            inputType='password'
             placeholder='Password'
             error={errors.password!}
             register={register('password', {
@@ -77,7 +79,7 @@ const Register: FC = () => {
               validate: (value) => {
                 return (
                   value.replace(/\s+/g, '').length >= 6 ||
-                  'Do not enter blank space. Please set password more than  equal 6 characters'
+                  'Do not enter blank space. Please set password more than equal 6 characters'
                 );
               }
             })}>
