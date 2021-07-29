@@ -40,6 +40,15 @@ export const getServerSideProps = async (ctx: NextPageContext) => {
   };
   try {
     const response = await axios.get(`${publicRuntimeConfig.API}/user`, config);
+    // control auth and routing
+    if (response.data.user.role === 'admin') {
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false
+        }
+      };
+    }
     return {
       props: {
         user: response.data.user
@@ -52,30 +61,15 @@ export const getServerSideProps = async (ctx: NextPageContext) => {
         return {
           props: {
             user: 'No user'
+          },
+          redirect: {
+            destination: '/',
+            permanent: false
           }
         };
       }
     }
   }
 };
-
-// const UserDashboard: FC<UserDashboardProps> = ({ todos }) => {
-//   return <Header>{JSON.stringify(todos)}</Header>;
-// };
-
-// interface Params extends ParsedUrlQuery {
-//   id: string;
-// }
-// export const getServerSideProps = async () => {
-//   console.log('getServerSideProps');
-//   const response = await axios.get(
-//     'https://jsonplaceholder.typicode.com/todos'
-//   );
-//   return {
-//     props: {
-//       todos: response.data
-//     } // will be passed to the page component as props
-//   };
-// };
 
 export default UserDashboard;
