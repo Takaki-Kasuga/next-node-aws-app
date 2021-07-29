@@ -6,9 +6,8 @@ export const prepareErrorData = (
 ) => {
   let id = uuid;
   let errorObject = response;
-  let statusCode = errorObject!.status;
   let message = errorObject!.data.message;
-  const errorData = { id, errorObject, statusCode, message };
+  const errorData = { id, errorObject, message };
 
   return errorData;
 };

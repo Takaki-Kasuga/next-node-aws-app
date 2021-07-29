@@ -5,6 +5,7 @@ import {
   Dispatch
 } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
+import Router from 'next/router';
 
 // slice
 import { setAlert, removeAlertAsync } from '../alert/alertSlice';
@@ -19,6 +20,7 @@ import { registerUserAPI, loginUserAPI } from './authAPI';
 import { isArray, isAxiosError } from '../../helpers/axiosError';
 import { errorAlert } from '../../helpers/errorAlert';
 import { prepareErrorData } from '../../helpers/prepareErrorData';
+import { authenticate } from '../../helpers/storageToken';
 
 // Define a type for the slice state
 interface AuthState {
@@ -31,7 +33,6 @@ interface AuthState {
     role: string;
   };
   status: 'success' | 'loading' | 'failed';
-  statusCode?: number;
 }
 
 // Define the initial state using that type
@@ -48,7 +49,6 @@ const initialState: AuthState = {
 };
 
 interface Rejected {
-  statusCode: number;
   status: number;
   message: string;
 }
@@ -81,7 +81,7 @@ export const registerUserAsync = createAsyncThunk<
     } catch (error) {
       if (isAxiosError(error)) {
         // helper function
-        const { id, errorObject, statusCode, message } = prepareErrorData(
+        const { id, errorObject, message } = prepareErrorData(
           uuidv4(),
           error.response!
         );
@@ -106,13 +106,11 @@ export const registerUserAsync = createAsyncThunk<
           dispatch(removeAlertAsync({ id, timeout: 5000 }));
         }
         return rejectWithValue({
-          statusCode,
           status: 'failed',
           message: message
         });
       } else {
         return rejectWithValue({
-          statusCode: 500,
           status: 'failed',
           message: 'Something wrong in Server'
         });
@@ -121,11 +119,23 @@ export const registerUserAsync = createAsyncThunk<
   }
 );
 
+export interface LoginReturnData {
+  message: string;
+  status: string;
+  token: string;
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    role: string;
+  };
+}
+
 //@Desc   Login User
 export const loginUserAsync = createAsyncThunk<
-  any,
+  LoginReturnData,
   { email: string; password: string },
-  any
+  ThunkConfig
 >(
   'auth/loginUserAsync',
   async (loginFormData, { dispatch, rejectWithValue }) => {
@@ -135,11 +145,14 @@ export const loginUserAsync = createAsyncThunk<
       const message = response.data.message;
       dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
       dispatch(removeAlertAsync({ id, timeout: 5000 }));
+      authenticate(response.data, () => {
+        return Router.push('/');
+      });
       return response.data;
     } catch (error) {
       if (isAxiosError(error)) {
         // helper function
-        const { id, errorObject, statusCode, message } = prepareErrorData(
+        const { id, errorObject, message } = prepareErrorData(
           uuidv4(),
           error.response!
         );
@@ -164,13 +177,11 @@ export const loginUserAsync = createAsyncThunk<
           dispatch(removeAlertAsync({ id, timeout: 5000 }));
         }
         return rejectWithValue({
-          statusCode,
           status: 'failed',
           message: message
         });
       } else {
         return rejectWithValue({
-          statusCode: 500,
           status: 'failed',
           message: 'Something wrong in Server'
         });
@@ -207,8 +218,26 @@ export const authSlice = createSlice({
         registerUserAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           console.log('action.payload', action.payload);
-          const { statusCode, status, message } = action.payload as Rejected;
-          return { ...state, statusCode, status, message };
+          const { status, message } = action.payload as Rejected;
+          return { ...state, status, message };
+        }
+      )
+      .addCase(loginUserAsync.pending, (state) => {
+        return { ...state, status: 'loading' };
+      })
+      .addCase(
+        loginUserAsync.fulfilled,
+        (state: any, action: PayloadAction<LoginReturnData>) => {
+          const { status, message, user, token } = action.payload;
+          return { ...state, status, message, user, token };
+        }
+      )
+      .addCase(
+        loginUserAsync.rejected,
+        (state: any, action: PayloadAction<unknown>) => {
+          console.log('action.payload', action.payload);
+          const { status, message } = action.payload as Rejected;
+          return { ...state, status, message };
         }
       );
   }
