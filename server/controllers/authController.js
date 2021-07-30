@@ -3,9 +3,13 @@ const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { nanoid } = require('nanoid');
+const _ = require('lodash');
 
 // helpers
-const { registerEnailParams } = require('../helpers/email');
+const {
+  registerEnailParams,
+  forgotPasswordEnailParams
+} = require('../helpers/email');
 
 // @document  https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/ses-examples-sending-email.html
 AWS.config.update({
@@ -34,13 +38,9 @@ exports.register = async (req, res) => {
         .json({ message: 'Email is taken', status: 'failed' });
 
     // generate token with user email and _password
-    const token = jwt.sign(
-      { name, email, password },
-      process.env.JWT_ACCOUNT_ACTIVATION,
-      {
-        expiresIn: '10m'
-      }
-    );
+    const token = jwt.sign({ name, email, password }, process.env.JWT_SECRET, {
+      expiresIn: '10m'
+    });
 
     // Send email
     const params = registerEnailParams(email, token);
@@ -148,13 +148,9 @@ exports.login = async (req, res) => {
       });
 
     // generate token with mongo ObjectId（this is access token）
-    const token = jwt.sign(
-      { _id: user._id },
-      process.env.JWT_ACCOUNT_ACTIVATION,
-      {
-        expiresIn: '7d'
-      }
-    );
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '7d'
+    });
 
     res.status(201).json({
       message: 'You succeeded in logining this application.',
@@ -169,6 +165,119 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({
+      errors: error,
+      message: 'Server error.',
+      status: 'failed'
+    });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email: email });
+    console.log('DBから一致するオブジェクトを見つけたお。');
+    if (!user)
+      return res.status(401).json({
+        message: 'User with that email does not exist',
+        status: 'failed'
+      });
+
+    const token = jwt.sign({ name: user.name }, process.env.JWT_SECRET, {
+      expiresIn: '10m'
+    });
+
+    // Send email
+    const params = forgotPasswordEnailParams(email, token);
+
+    const resetPasswordUser = await User.updateOne(
+      { email },
+      { $set: { resetPasswordLink: token } }
+    );
+    if (!resetPasswordUser)
+      return res.status(401).json({
+        message: 'Password reset failed. Please try again.',
+        status: 'failed'
+      });
+
+    const sendEmailOnResetPassword = ses.sendEmail(params).promise();
+
+    sendEmailOnResetPassword
+      .then((data) => {
+        console.log('SES reset password success', data);
+        res.status(200).json({
+          message: `Email has been sent to ${email}, Click on the link to reset password.`,
+          status: 'success'
+        });
+      })
+      .catch((error) => {
+        console.log('SES reset password failed', error);
+        res.status(401).json({
+          errors: error,
+          message: 'We could not verify your email, please try again.',
+          status: 'failed'
+        });
+      });
+  } catch (error) {
+    res.status(500).json({
+      errors: error,
+      message: 'Server error.',
+      status: 'failed'
+    });
+  }
+};
+exports.resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+  try {
+    if (token) {
+      // chexk for expirey（middleware on）
+      // try {
+      //   jwt.verify(token, process.env.JWT_SECRET);
+      // } catch (error) {
+      //   return res.status(401).json({
+      //     errors: error,
+      //     message: 'Expired link Try again.',
+      //     status: 'failed'
+      //   });
+      // }
+
+      const user = await User.findOne({ resetPasswordLink: token });
+      if (!user) {
+        return res.status(401).json({
+          message: 'Invalid token. Please try again.',
+          status: 'failed'
+        });
+      }
+
+      // create salt for bycrypt
+      const salt = await bcrypt.genSalt(10);
+      // create hash password
+      const hashed_password = await bcrypt.hash(newPassword, salt);
+
+      // another pattern request type Put
+      // console.log('user', user);
+      // const updateFields = {
+      //   hashed_password,
+      //   resetPasswordLink: ''
+      // };
+      // const updateUserModelData = _.extend(user, updateFields);
+      // console.log('updateUserModelData', updateUserModelData);
+      // await updateUserModelData.save();
+
+      // request type Patch
+      await User.updateOne(
+        { resetPasswordLink: token },
+        { $set: { hashed_password, resetPasswordLink: '' } }
+      );
+
+      return res.status(200).json({
+        message: 'Great! Now you can login with your new Password!',
+        status: 'success'
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
       errors: error,
       message: 'Server error.',
       status: 'failed'

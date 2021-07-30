@@ -7,7 +7,9 @@ const authController = require('../controllers/authController');
 // import from middleware for validation
 const {
   userRegisterValidator,
-  userLoginValidator
+  userLoginValidator,
+  forgotPasswordValidator,
+  resetPasswordValidator
 } = require('../middlewares/validators/authValidator');
 const {
   confirmVerifyJsonWebToken
@@ -30,6 +32,19 @@ router
 router
   .route('/login')
   .post(userLoginValidator, runValidation, authController.login);
+
+router
+  .route('/forgot-password')
+  .patch(forgotPasswordValidator, runValidation, authController.forgotPassword);
+
+router
+  .route('/reset-password')
+  .patch(
+    resetPasswordValidator,
+    runValidation,
+    confirmVerifyJsonWebToken,
+    authController.resetPassword
+  );
 
 // router.route('/secret').get(...UseJwt(), (req, res) => {
 //   res.status(200).json({

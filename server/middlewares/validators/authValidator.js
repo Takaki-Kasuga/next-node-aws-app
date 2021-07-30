@@ -16,3 +16,14 @@ exports.userLoginValidator = [
     min: 6
   })
 ];
+
+exports.forgotPasswordValidator = [
+  body('email', 'Must be a valid email address!').isEmail()
+];
+
+exports.resetPasswordValidator = [
+  body('newPassword', 'Password must be at least 6 characters long').isLength({
+    min: 6
+  }),
+  body('token', 'Token is required!').not().isEmpty()
+];
