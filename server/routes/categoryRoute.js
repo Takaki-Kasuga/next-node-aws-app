@@ -23,7 +23,7 @@ const { runValidation } = require('../middlewares/validators/index');
 router
   .route('/category')
   .post(
-    decodedTokenIntoMiddleware,
+    ...decodedTokenIntoMiddleware(),
     categoryCreateValidator,
     runValidation,
     adminMiddleware,
