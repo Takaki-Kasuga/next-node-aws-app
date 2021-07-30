@@ -100,7 +100,7 @@ const Header: FC<HeaderProps> = ({ children }) => {
         ) : null}
       </ul>
       <Alert />
-      <div className='container mx-auto py-5'>{children}</div>
+      <div className='container mx-auto p-5'>{children}</div>
     </Fragment>
   );
 };
