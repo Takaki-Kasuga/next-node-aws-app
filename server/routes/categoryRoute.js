@@ -20,15 +20,13 @@ const {
 const { runValidation } = require('../middlewares/validators/index');
 
 // routes
-router
-  .route('/category')
-  .post(
-    ...decodedTokenIntoMiddleware(),
-    categoryCreateValidator,
-    runValidation,
-    adminMiddleware,
-    categoryController.create
-  );
+router.route('/category').post(
+  ...decodedTokenIntoMiddleware(),
+  // categoryCreateValidator,
+  // runValidation,
+  adminMiddleware,
+  categoryController.create
+);
 
 router.route('/categories').get(categoryController.list);
 
