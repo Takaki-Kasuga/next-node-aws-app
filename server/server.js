@@ -16,6 +16,7 @@ connectDB();
 // import routes
 const authRouter = require('./routes/authRoute');
 const userRouter = require('./routes/userRoute');
+const categoryRouter = require('./routes/categoryRoute');
 
 // notificate http request
 app.use(morgan('dev'));
@@ -30,6 +31,7 @@ app.use(cors({ origin: process.env.CLIENT_URL }));
 // middlewares
 app.use('/api/auth', authRouter);
 app.use('/api', userRouter);
+app.use('/api', categoryRouter);
 
 console.log('process.env.PORT', process.env.PORT);
 // console.log('process.env', process.env);
