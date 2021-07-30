@@ -14,7 +14,12 @@ import { setAlert, removeAlertAsync } from '../alert/alertSlice';
 import { v4 as uuidv4 } from 'uuid';
 
 // import API
-import { registerUserAPI, loginUserAPI } from './authAPI';
+import {
+  registerUserAPI,
+  loginUserAPI,
+  forgotPasswordAPI,
+  resetPasswordAPI
+} from './authAPI';
 
 // helper
 import { isArray, isAxiosError } from '../../helpers/axiosError';
@@ -150,6 +155,127 @@ export const loginUserAsync = createAsyncThunk<
           ? Router.push('/admin')
           : Router.push('/user');
       });
+      return response.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        // helper function
+        const { id, errorObject, message } = prepareErrorData(
+          uuidv4(),
+          error.response!
+        );
+        // この中のerrはAxiosErrorとして認識される
+        console.log('Axiosのエラー');
+        console.log('error.isAxiosError', error.isAxiosError);
+        console.log('error', error.response);
+
+        // response error is Array
+        if (isArray(errorObject.data.errors)) {
+          // helper function
+          errorAlert(
+            errorObject.data.errors,
+            dispatch,
+            id,
+            setAlert,
+            removeAlertAsync
+          );
+          // response error is Object
+        } else {
+          dispatch(setAlert({ id, message, alertTypeBgColorName: 'red-400' }));
+          dispatch(removeAlertAsync({ id, timeout: 5000 }));
+        }
+        return rejectWithValue({
+          status: 'failed',
+          message: message
+        });
+      } else {
+        return rejectWithValue({
+          status: 'failed',
+          message: 'Something wrong in Server'
+        });
+      }
+    }
+  }
+);
+
+//@Desc   Forgot password
+export const forgotPasswordAsync = createAsyncThunk<
+  any,
+  { email: string },
+  ThunkConfig
+>('auth/forgotPasswordAsync', async (email, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await forgotPasswordAPI(email);
+    const id = uuidv4();
+    const message = response.data.message;
+    dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
+    dispatch(removeAlertAsync({ id, timeout: 5000 }));
+
+    // authenticate(response.data, () => {
+    //   return isAuth() && isAuth().role === 'admin'
+    //     ? Router.push('/admin')
+    //     : Router.push('/user');
+    // });
+    return response.data;
+  } catch (error) {
+    if (isAxiosError(error)) {
+      // helper function
+      const { id, errorObject, message } = prepareErrorData(
+        uuidv4(),
+        error.response!
+      );
+      // この中のerrはAxiosErrorとして認識される
+      console.log('Axiosのエラー');
+      console.log('error.isAxiosError', error.isAxiosError);
+      console.log('error', error.response);
+
+      // response error is Array
+      if (isArray(errorObject.data.errors)) {
+        // helper function
+        errorAlert(
+          errorObject.data.errors,
+          dispatch,
+          id,
+          setAlert,
+          removeAlertAsync
+        );
+        // response error is Object
+      } else {
+        dispatch(setAlert({ id, message, alertTypeBgColorName: 'red-400' }));
+        dispatch(removeAlertAsync({ id, timeout: 5000 }));
+      }
+      return rejectWithValue({
+        status: 'failed',
+        message: message
+      });
+    } else {
+      return rejectWithValue({
+        status: 'failed',
+        message: 'Something wrong in Server'
+      });
+    }
+  }
+});
+
+//@Desc    Reset password
+export const resetPasswordAsync = createAsyncThunk<
+  any,
+  { newPassword: string; token: string },
+  ThunkConfig
+>(
+  'auth/resetPasswordAsync',
+  async (resetPasswordFormData, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await resetPasswordAPI(resetPasswordFormData);
+      const id = uuidv4();
+      const message = response.data.message;
+      dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
+      dispatch(removeAlertAsync({ id, timeout: 5000 }));
+
+      // authenticate(response.data, () => {
+      //   return isAuth() && isAuth().role === 'admin'
+      //     ? Router.push('/admin')
+      //     : Router.push('/user');
+      // });
       return response.data;
     } catch (error) {
       if (isAxiosError(error)) {

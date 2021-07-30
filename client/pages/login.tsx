@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { useAppDispatch } from '../app/hooks';
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 // components
 import { Header } from '../components/layout/index';
@@ -82,11 +83,18 @@ const Login: FC = () => {
             Password
           </InputText>
         </div>
-        <button
-          type='submit'
-          className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
-          Login
-        </button>
+        <div className='flex justify-between mt-10'>
+          <button
+            type='submit'
+            className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
+            Login
+          </button>
+          <Link href='/auth/password/forgot'>
+            <a className='bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-3 px-4 border border-red-500 hover:border-transparent rounded'>
+              ForgotPassword
+            </a>
+          </Link>
+        </div>
       </form>
     </Header>
   );

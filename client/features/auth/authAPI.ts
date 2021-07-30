@@ -10,6 +10,14 @@ interface LoginUserAPITypes {
   email: string;
   password: string;
 }
+interface ForgotPasswordAPITypes {
+  email: string;
+}
+
+interface ResetPasswordAPITypes {
+  newPassword: string;
+  token: string;
+}
 
 export const registerUserAPI = ({
   name,
@@ -35,4 +43,26 @@ export const loginUserAPI = ({ email, password }: LoginUserAPITypes) => {
   const body = JSON.stringify({ email, password });
 
   return axios.post(`${API}/auth/login`, body, config);
+};
+
+export const forgotPasswordAPI = ({ email }: ForgotPasswordAPITypes) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  const body = JSON.stringify({ email });
+
+  return axios.patch(`${API}/auth/forgot-password`, body, config);
+};
+
+export const resetPasswordAPI = ({ newPassword,token }: ResetPasswordAPITypes) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  const body = JSON.stringify({ newPassword, token });
+
+  return axios.patch(`${API}/auth/reset-password`, body, config);
 };

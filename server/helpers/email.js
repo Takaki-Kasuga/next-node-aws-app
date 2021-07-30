@@ -54,7 +54,7 @@ exports.forgotPasswordEnailParams = (email, token) => {
       },
       Subject: {
         Charset: 'UTF-8',
-        Data: 'Complete your registration'
+        Data: 'Password reset link'
       }
     }
   };
