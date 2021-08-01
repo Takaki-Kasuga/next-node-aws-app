@@ -23,7 +23,8 @@ import { InputText, Textarea } from '../../../components/forms/index';
 // slice
 import {
   addCategoryAsync,
-  categoryStateSlice
+  categoryStateSlice,
+  defaultStatus
 } from '../../../features/category/categorySlice';
 
 interface CategoryFormType {
@@ -37,6 +38,12 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
   const category = useAppSelector(categoryStateSlice);
   console.log('user', user);
   console.log('token', token);
+
+  useEffect(() => {
+    return () => {
+      dispatch(defaultStatus());
+    };
+  }, []);
   const {
     reset,
     register,
@@ -59,7 +66,9 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
       });
       console.log('addCategoryFormData', addCategoryFormData);
       dispatch(addCategoryAsync(addCategoryFormData));
-      // reset();
+      if (category.status === 'success') {
+        reset();
+      }
     }
   };
 

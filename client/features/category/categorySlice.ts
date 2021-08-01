@@ -46,9 +46,9 @@ interface CategoryReturnData {
 
 // Define a type for the slice state
 interface CategoryState {
-  saveCategory: CategoryReturnData
+  saveCategory: CategoryReturnData;
   message: string;
-  status: 'success' | 'loading' | 'failed';
+  status: 'success' | 'loading' | 'failed' | 'default';
 }
 
 // Define the initial state using that type
@@ -67,7 +67,7 @@ const initialState: CategoryState = {
     __v: 0
   },
   message: '',
-  status: 'success'
+  status: 'default'
 };
 
 interface Rejected {
@@ -154,8 +154,8 @@ export const categorySlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    increment: (state) => {
-      return state;
+    defaultStatus: (state) => {
+      return { ...state, status: 'default' };
     },
     decrement: (state) => {
       return state;
@@ -183,7 +183,7 @@ export const categorySlice = createSlice({
   }
 });
 
-export const { increment, decrement } = categorySlice.actions;
+export const { defaultStatus, decrement } = categorySlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const categoryStateSlice = (state: RootState) => state.category;

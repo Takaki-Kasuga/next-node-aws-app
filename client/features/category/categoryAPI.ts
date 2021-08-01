@@ -16,6 +16,7 @@ export const addCategoryAPI = ({
 }: addCategoryAPITypes) => {
   const config = {
     headers: {
+      'Content-Type': 'multipart/form-data',
       'Authorization': `Bearer ${token}`
     }
   };

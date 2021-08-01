@@ -52,8 +52,7 @@ exports.create = async (req, res) => {
         status: 'failed'
       });
     }
-    // console.log('fs.readFileSync(image.path)', fs.readFileSync(image.path));
-    // console.log('image.path', image.path);
+
     // upload image to s3
     const params = {
       Bucket: 'hacker-stack-contents',
@@ -114,38 +113,35 @@ exports.create = async (req, res) => {
   });
 };
 
-// exports.create = async (req, res) => {
-//   console.log('req.user', req.user);
-//   const { name, content } = req.body;
-//   const slug = slugify(name);
-//   const image = {
-//     url: `https://via.placeholder.com/200x150.png?text=${process.env.CLIENT_URL}`,
-//     key: '123'
-//   };
-
-//   const category = new Category({
-//     name,
-//     slug,
-//     image
-//   });
-//   category.postedBy = req.user._id;
-
-//   try {
-//     const categoryData = await category.save();
-//     console.log('categoryData', categoryData);
-//     res.status(200).json(categoryData);
-//   } catch (error) {
-//     return res.status(500).json({
-//       errors: [
-//         {
-//           msg: 'Server error.'
-//         }
-//       ],
-//       errorData: error,
-//       status: 'failed'
-//     });
-//   }
-// };
-exports.list = async (req, res) => {};
+exports.list = async (req, res) => {
+  try {
+    const allCategoryLists = await Category.find();
+    if (!allCategoryLists) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Category could not load'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+    res.status(200).json({
+      allCategoryLists,
+      status: 'success',
+      message: 'you succeeded in getting all category lists'
+    });
+  } catch (error) {
+    return res.status(400).json({
+      errors: [
+        {
+          msg: ' Server Error'
+        }
+      ],
+      errorData: error,
+      status: 'failed'
+    });
+  }
+};
 exports.read = async (req, res) => {};
 exports.remove = async (req, res) => {};
