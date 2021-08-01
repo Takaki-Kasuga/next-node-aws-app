@@ -16,7 +16,7 @@ interface ThunkConfig {
   };
 }
 
-export const errorAlert = (
+export const errorAlertFunc = (
   errorArray: {
     location: string;
     msg: string;

@@ -7,19 +7,6 @@ import {
 import { RootState } from '../../app/store';
 import Router from 'next/router';
 
-// slice
-import {
-  setDangerAlert,
-  removeDangerAlertAsync
-} from '../alert/dangerAlertSlice';
-import {
-  setSuccessAlert,
-  removeSuccessAlertAsync
-} from '../alert/successAlertSlice';
-
-// npm package
-import { v4 as uuidv4 } from 'uuid';
-
 // import API
 import {
   registerUserAPI,
@@ -29,10 +16,9 @@ import {
 } from './authAPI';
 
 // helper
-import { isArray, isAxiosError } from '../../helpers/axiosError';
-import { errorAlert } from '../../helpers/errorAlert';
-import { prepareErrorData } from '../../helpers/prepareErrorData';
 import { authenticate, isAuth } from '../../helpers/storageToken';
+import { errorHandling } from '../../helpers/errorHandling';
+import { successAlertFunc } from '../../helpers/successAlertFunc';
 
 // Define a type for the slice state
 interface AuthState {
@@ -67,7 +53,7 @@ interface Rejected {
 interface ThunkConfig {
   state?: RootState;
   dispatch?: Dispatch;
-  rejectWithValue?: Rejected;
+  rejectValue?: Rejected;
 }
 interface RegisterReturnData {
   message: string;
@@ -84,49 +70,14 @@ export const registerUserAsync = createAsyncThunk<
   async (registerFormData, { dispatch, rejectWithValue }) => {
     try {
       const response = await registerUserAPI(registerFormData);
-      const id = uuidv4();
-      const message = response.data.message;
-      dispatch(setSuccessAlert({ id, message }));
-      dispatch(removeSuccessAlertAsync({ id, timeout: 100000 }));
+      successAlertFunc({
+        dispatch,
+        response
+      });
       console.log('response.data', response.data);
       return response.data;
     } catch (error) {
-      if (isAxiosError(error)) {
-        // helper function
-        const { id, errorObject, message } = prepareErrorData(
-          uuidv4(),
-          error.response!
-        );
-        // この中のerrはAxiosErrorとして認識される
-        console.log('Axiosのエラー');
-        console.log('error.isAxiosError', error.isAxiosError);
-        console.log('error', error.response);
-
-        // response error is Array
-        if (isArray(errorObject.data.errors)) {
-          // helper function
-          errorAlert(
-            errorObject.data.errors,
-            dispatch,
-            id,
-            setDangerAlert,
-            removeDangerAlertAsync
-          );
-          // response error is Object
-        } else {
-          dispatch(setDangerAlert({ id, message }));
-          dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
-        }
-        return rejectWithValue({
-          status: 'failed',
-          message: message
-        });
-      } else {
-        return rejectWithValue({
-          status: 'failed',
-          message: 'Something wrong in Server'
-        });
-      }
+      return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
 );
@@ -153,10 +104,10 @@ export const loginUserAsync = createAsyncThunk<
   async (loginFormData, { dispatch, rejectWithValue }) => {
     try {
       const response = await loginUserAPI(loginFormData);
-      const id = uuidv4();
-      const message = response.data.message;
-      dispatch(setSuccessAlert({ id, message }));
-      dispatch(removeSuccessAlertAsync({ id, timeout: 5000 }));
+      successAlertFunc({
+        dispatch,
+        response
+      });
       authenticate(response.data, () => {
         return isAuth() && isAuth().role === 'admin'
           ? Router.push('/admin')
@@ -164,42 +115,7 @@ export const loginUserAsync = createAsyncThunk<
       });
       return response.data;
     } catch (error) {
-      if (isAxiosError(error)) {
-        // helper function
-        const { id, errorObject, message } = prepareErrorData(
-          uuidv4(),
-          error.response!
-        );
-        // この中のerrはAxiosErrorとして認識される
-        console.log('Axiosのエラー');
-        console.log('error.isAxiosError', error.isAxiosError);
-        console.log('error', error.response);
-
-        // response error is Array
-        if (isArray(errorObject.data.errors)) {
-          // helper function
-          errorAlert(
-            errorObject.data.errors,
-            dispatch,
-            id,
-            setDangerAlert,
-            removeDangerAlertAsync
-          );
-          // response error is Object
-        } else {
-          dispatch(setDangerAlert({ id, message }));
-          dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
-        }
-        return rejectWithValue({
-          status: 'failed',
-          message: message
-        });
-      } else {
-        return rejectWithValue({
-          status: 'failed',
-          message: 'Something wrong in Server'
-        });
-      }
+      return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
 );
@@ -212,54 +128,13 @@ export const forgotPasswordAsync = createAsyncThunk<
 >('auth/forgotPasswordAsync', async (email, { dispatch, rejectWithValue }) => {
   try {
     const response = await forgotPasswordAPI(email);
-    const id = uuidv4();
-    const message = response.data.message;
-    dispatch(setSuccessAlert({ id, message }));
-    dispatch(removeSuccessAlertAsync({ id, timeout: 5000 }));
-
-    // authenticate(response.data, () => {
-    //   return isAuth() && isAuth().role === 'admin'
-    //     ? Router.push('/admin')
-    //     : Router.push('/user');
-    // });
+    successAlertFunc({
+      dispatch,
+      response
+    });
     return response.data;
   } catch (error) {
-    if (isAxiosError(error)) {
-      // helper function
-      const { id, errorObject, message } = prepareErrorData(
-        uuidv4(),
-        error.response!
-      );
-      // この中のerrはAxiosErrorとして認識される
-      console.log('Axiosのエラー');
-      console.log('error.isAxiosError', error.isAxiosError);
-      console.log('error', error.response);
-
-      // response error is Array
-      if (isArray(errorObject.data.errors)) {
-        // helper function
-        errorAlert(
-          errorObject.data.errors,
-          dispatch,
-          id,
-          setDangerAlert,
-          removeDangerAlertAsync
-        );
-        // response error is Object
-      } else {
-        dispatch(setDangerAlert({ id, message }));
-        dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
-      }
-      return rejectWithValue({
-        status: 'failed',
-        message: message
-      });
-    } else {
-      return rejectWithValue({
-        status: 'failed',
-        message: 'Something wrong in Server'
-      });
-    }
+    return errorHandling({ error, dispatch, rejectWithValue });
   }
 });
 
@@ -273,54 +148,13 @@ export const resetPasswordAsync = createAsyncThunk<
   async (resetPasswordFormData, { dispatch, rejectWithValue }) => {
     try {
       const response = await resetPasswordAPI(resetPasswordFormData);
-      const id = uuidv4();
-      const message = response.data.message;
-      dispatch(setSuccessAlert({ id, message }));
-      dispatch(removeSuccessAlertAsync({ id, timeout: 5000 }));
-
-      // authenticate(response.data, () => {
-      //   return isAuth() && isAuth().role === 'admin'
-      //     ? Router.push('/admin')
-      //     : Router.push('/user');
-      // });
+      successAlertFunc({
+        dispatch,
+        response
+      });
       return response.data;
     } catch (error) {
-      if (isAxiosError(error)) {
-        // helper function
-        const { id, errorObject, message } = prepareErrorData(
-          uuidv4(),
-          error.response!
-        );
-        // この中のerrはAxiosErrorとして認識される
-        console.log('Axiosのエラー');
-        console.log('error.isAxiosError', error.isAxiosError);
-        console.log('error', error.response);
-
-        // response error is Array
-        if (isArray(errorObject.data.errors)) {
-          // helper function
-          errorAlert(
-            errorObject.data.errors,
-            dispatch,
-            id,
-            setDangerAlert,
-            removeDangerAlertAsync
-          );
-          // response error is Object
-        } else {
-          dispatch(setDangerAlert({ id, message }));
-          dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
-        }
-        return rejectWithValue({
-          status: 'failed',
-          message: message
-        });
-      } else {
-        return rejectWithValue({
-          status: 'failed',
-          message: 'Something wrong in Server'
-        });
-      }
+      return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
 );

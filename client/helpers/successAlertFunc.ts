@@ -10,37 +10,22 @@ import { AxiosResponse } from 'axios';
 
 import { SuccessAlertStatus } from '../features/alert/successAlertSlice';
 
-interface ThunkConfig {
-  state?: RootState;
-  dispatch?: Dispatch;
-  rejectWithValue?: {
-    status: number;
-    message: string;
-  };
-}
+import {
+  setSuccessAlert,
+  removeSuccessAlertAsync
+} from '../features/alert/successAlertSlice';
 
 interface SuccessAlertFuncProps {
   dispatch: Dispatch;
   response: AxiosResponse<any>;
-  setSuccessAlert: ActionCreatorWithPayload<SuccessAlertStatus, string>;
-  removeSuccessAlertAsync: AsyncThunk<
-    string,
-    {
-      id: string;
-      timeout?: number | undefined;
-    },
-    ThunkConfig
-  >;
 }
 
 export const successAlertFunc = ({
   dispatch,
-  response,
-  setSuccessAlert,
-  removeSuccessAlertAsync
+  response
 }: SuccessAlertFuncProps) => {
   const id = uuidv4();
   const message = response.data.message;
   dispatch(setSuccessAlert({ id, message }));
-  dispatch<any>(removeSuccessAlertAsync({ id, timeout: 100000 }));
+  dispatch<any>(removeSuccessAlertAsync({ id, timeout: 5000 }));
 };

@@ -5,30 +5,13 @@ import {
   Dispatch
 } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
-import Router from 'next/router';
-
-// slice
-import {
-  setDangerAlert,
-  removeDangerAlertAsync
-} from '../alert/dangerAlertSlice';
-import {
-  setSuccessAlert,
-  removeSuccessAlertAsync
-} from '../alert/successAlertSlice';
-
-// npm package
-import { v4 as uuidv4 } from 'uuid';
 
 // import API
 import { addCategoryAPI } from './categoryAPI';
 
 // helper
-import { isArray, isAxiosError } from '../../helpers/axiosError';
-import { errorAlert } from '../../helpers/errorAlert';
-import { prepareErrorData } from '../../helpers/prepareErrorData';
-import { authenticate, isAuth } from '../../helpers/storageToken';
 import { successAlertFunc } from '../../helpers/successAlertFunc';
+import { errorHandling } from '../../helpers/errorHandling';
 
 interface CategoryReturnData {
   image: {
@@ -77,7 +60,7 @@ interface Rejected {
 interface ThunkConfig {
   state?: RootState;
   dispatch?: Dispatch;
-  rejectWithValue?: Rejected;
+  rejectValue?: Rejected;
 }
 
 //@Desc   Register User
@@ -98,53 +81,13 @@ export const addCategoryAsync = createAsyncThunk<
       const response = await addCategoryAPI(addCategoryFormData);
       successAlertFunc({
         dispatch,
-        response,
-        setSuccessAlert,
-        removeSuccessAlertAsync
+        response
       });
-      // const id = uuidv4();
-      // const message = response.data.message;
-      // dispatch(setSuccessAlert({ id, message }));
-      // dispatch(removeSuccessAlertAsync({ id, timeout: 100000 }));
       console.log('response.data', response.data);
       return response.data;
     } catch (error) {
-      if (isAxiosError(error)) {
-        console.log('Axiosのエラー');
-        console.log('error.isAxiosError', error.isAxiosError);
-        console.log('error', error.response);
-        // helper function
-        const { id, errorObject, message } = prepareErrorData(
-          uuidv4(),
-          error.response!
-        );
-        // この中のerrはAxiosErrorとして認識される
-
-        // response error is Array
-        if (isArray(errorObject.data.errors)) {
-          // helper function
-          errorAlert(
-            errorObject.data.errors,
-            dispatch,
-            id,
-            setDangerAlert,
-            removeDangerAlertAsync
-          );
-          // response error is Object
-        } else {
-          dispatch(setDangerAlert({ id, message }));
-          dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
-        }
-        return rejectWithValue({
-          status: 'failed',
-          message: message
-        });
-      } else {
-        return rejectWithValue({
-          status: 'failed',
-          message: 'Something wrong in Server'
-        });
-      }
+      console.log('エラーですt', error);
+      return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
 );
@@ -177,7 +120,7 @@ export const categorySlice = createSlice({
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
           console.log('action.payload', action.payload);
-          return { ...state, status };
+          return { ...state, status, message };
         }
       );
   }
