@@ -7,7 +7,7 @@ import {
 import { RootState } from '../../app/store';
 
 // import API
-import { removeAlertAPI } from './alertAPI';
+import { removeDangerAlertAPI } from './dangerAlertAPI';
 
 interface ThunkConfig {
   state?: RootState;
@@ -18,33 +18,32 @@ interface ThunkConfig {
   };
 }
 
-export interface AlertStatus {
-  alertTypeBgColorName: string;
+export interface DangerAlertStatus {
   id: string;
   message: string;
 }
 
 // Define a type for the slice state
-interface AlertState {
-  alertStatus: AlertStatus[];
+interface DangerAlertState {
+  dangerAlertStatus: DangerAlertStatus[];
   status: 'success' | 'loading' | 'failed';
 }
 
 // Define the initial state using that type
-const initialState: AlertState = {
-  alertStatus: [],
+const initialState: DangerAlertState = {
+  dangerAlertStatus: [],
   status: 'loading'
 };
 
-export const removeAlertAsync = createAsyncThunk<
+export const removeDangerAlertAsync = createAsyncThunk<
   string,
   { id: string; timeout?: number },
   ThunkConfig
 >(
-  'alert/removeAlertAsync',
+  'alert/removeDangerAlertAsync',
   async ({ id, timeout = 5000 }, { rejectWithValue }) => {
     try {
-      const response = await removeAlertAPI(id, timeout);
+      const response = await removeDangerAlertAPI(id, timeout);
       return response.id;
     } catch (error) {
       return rejectWithValue({
@@ -55,38 +54,37 @@ export const removeAlertAsync = createAsyncThunk<
   }
 );
 
-export const alertSlice = createSlice({
-  name: 'alert',
-  // `createSlice` will infer the state type from the `initialState` argument
+export const dangerAlertSlice = createSlice({
+  name: 'dangerAlert',
   initialState,
   reducers: {
-    setAlert: (state, action: PayloadAction<AlertStatus>) => {
+    setDangerAlert: (state, action: PayloadAction<DangerAlertStatus>) => {
       console.log('発火しています。');
       state.status = 'success';
-      state.alertStatus.push(action.payload);
+      state.dangerAlertStatus.push(action.payload);
       return state;
     }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(removeAlertAsync.pending, (state) => {
+      .addCase(removeDangerAlertAsync.pending, (state) => {
         state.status = 'loading';
         return state;
       })
-      .addCase(removeAlertAsync.fulfilled, (state, action) => {
+      .addCase(removeDangerAlertAsync.fulfilled, (state, action) => {
         state.status = 'success';
-        const filterAlertStatus = state.alertStatus.filter((alert) => {
+        const filterAlertStatus = state.dangerAlertStatus.filter((alert) => {
           return alert.id !== action.payload;
         });
-        state.alertStatus = filterAlertStatus;
+        state.dangerAlertStatus = filterAlertStatus;
         return state;
       });
   }
 });
 
-export const { setAlert } = alertSlice.actions;
+export const { setDangerAlert } = dangerAlertSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const alertState = (state: RootState) => state.alert;
+export const dangerAlertState = (state: RootState) => state.dangerAlert;
 
-export default alertSlice.reducer;
+export default dangerAlertSlice.reducer;

@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
 
 // components
-import { Alert } from '../helpers/index';
+import { DangerAlert, SuccessAlert } from '../helpers/index';
 
 // npm package
 import NProgress from 'nprogress';
@@ -99,7 +99,8 @@ const Header: FC<HeaderProps> = ({ children }) => {
           </li>
         ) : null}
       </ul>
-      <Alert />
+      <DangerAlert />
+      <SuccessAlert />
       <div className='container mx-auto p-5'>{children}</div>
     </Fragment>
   );

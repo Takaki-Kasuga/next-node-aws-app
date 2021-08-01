@@ -5,7 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
 
-import { AlertStatus } from '../features/alert/alertSlice';
+import { DangerAlertStatus } from '../features/alert/dangerAlertSlice';
 
 interface ThunkConfig {
   state?: RootState;
@@ -25,7 +25,7 @@ export const errorAlert = (
   }[],
   dispatch: Dispatch,
   id: string,
-  setAlert: ActionCreatorWithPayload<AlertStatus, string>,
+  setAlert: ActionCreatorWithPayload<DangerAlertStatus, string>,
   removeAlertAsync: AsyncThunk<
     string,
     {
@@ -46,8 +46,7 @@ export const errorAlert = (
       dispatch(
         setAlert({
           id,
-          message: error.msg,
-          alertTypeBgColorName: 'red-400'
+          message: error.msg
         })
       );
       dispatch<any>(removeAlertAsync({ id, timeout: 5000 }));

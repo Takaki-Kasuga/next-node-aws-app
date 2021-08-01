@@ -8,7 +8,14 @@ import { RootState } from '../../app/store';
 import Router from 'next/router';
 
 // slice
-import { setAlert, removeAlertAsync } from '../alert/alertSlice';
+import {
+  setDangerAlert,
+  removeDangerAlertAsync
+} from '../alert/dangerAlertSlice';
+import {
+  setSuccessAlert,
+  removeSuccessAlertAsync
+} from '../alert/successAlertSlice';
 
 // npm package
 import { v4 as uuidv4 } from 'uuid';
@@ -79,8 +86,8 @@ export const registerUserAsync = createAsyncThunk<
       const response = await registerUserAPI(registerFormData);
       const id = uuidv4();
       const message = response.data.message;
-      dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
-      dispatch(removeAlertAsync({ id, timeout: 100000 }));
+      dispatch(setSuccessAlert({ id, message }));
+      dispatch(removeSuccessAlertAsync({ id, timeout: 100000 }));
       console.log('response.data', response.data);
       return response.data;
     } catch (error) {
@@ -102,13 +109,13 @@ export const registerUserAsync = createAsyncThunk<
             errorObject.data.errors,
             dispatch,
             id,
-            setAlert,
-            removeAlertAsync
+            setDangerAlert,
+            removeDangerAlertAsync
           );
           // response error is Object
         } else {
-          dispatch(setAlert({ id, message, alertTypeBgColorName: 'red-400' }));
-          dispatch(removeAlertAsync({ id, timeout: 5000 }));
+          dispatch(setDangerAlert({ id, message }));
+          dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
         }
         return rejectWithValue({
           status: 'failed',
@@ -148,8 +155,8 @@ export const loginUserAsync = createAsyncThunk<
       const response = await loginUserAPI(loginFormData);
       const id = uuidv4();
       const message = response.data.message;
-      dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
-      dispatch(removeAlertAsync({ id, timeout: 5000 }));
+      dispatch(setSuccessAlert({ id, message }));
+      dispatch(removeSuccessAlertAsync({ id, timeout: 5000 }));
       authenticate(response.data, () => {
         return isAuth() && isAuth().role === 'admin'
           ? Router.push('/admin')
@@ -175,13 +182,13 @@ export const loginUserAsync = createAsyncThunk<
             errorObject.data.errors,
             dispatch,
             id,
-            setAlert,
-            removeAlertAsync
+            setDangerAlert,
+            removeDangerAlertAsync
           );
           // response error is Object
         } else {
-          dispatch(setAlert({ id, message, alertTypeBgColorName: 'red-400' }));
-          dispatch(removeAlertAsync({ id, timeout: 5000 }));
+          dispatch(setDangerAlert({ id, message }));
+          dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
         }
         return rejectWithValue({
           status: 'failed',
@@ -207,8 +214,8 @@ export const forgotPasswordAsync = createAsyncThunk<
     const response = await forgotPasswordAPI(email);
     const id = uuidv4();
     const message = response.data.message;
-    dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
-    dispatch(removeAlertAsync({ id, timeout: 5000 }));
+    dispatch(setSuccessAlert({ id, message }));
+    dispatch(removeSuccessAlertAsync({ id, timeout: 5000 }));
 
     // authenticate(response.data, () => {
     //   return isAuth() && isAuth().role === 'admin'
@@ -235,13 +242,13 @@ export const forgotPasswordAsync = createAsyncThunk<
           errorObject.data.errors,
           dispatch,
           id,
-          setAlert,
-          removeAlertAsync
+          setDangerAlert,
+          removeDangerAlertAsync
         );
         // response error is Object
       } else {
-        dispatch(setAlert({ id, message, alertTypeBgColorName: 'red-400' }));
-        dispatch(removeAlertAsync({ id, timeout: 5000 }));
+        dispatch(setDangerAlert({ id, message }));
+        dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
       }
       return rejectWithValue({
         status: 'failed',
@@ -268,8 +275,8 @@ export const resetPasswordAsync = createAsyncThunk<
       const response = await resetPasswordAPI(resetPasswordFormData);
       const id = uuidv4();
       const message = response.data.message;
-      dispatch(setAlert({ id, message, alertTypeBgColorName: 'green-300' }));
-      dispatch(removeAlertAsync({ id, timeout: 5000 }));
+      dispatch(setSuccessAlert({ id, message }));
+      dispatch(removeSuccessAlertAsync({ id, timeout: 5000 }));
 
       // authenticate(response.data, () => {
       //   return isAuth() && isAuth().role === 'admin'
@@ -296,13 +303,13 @@ export const resetPasswordAsync = createAsyncThunk<
             errorObject.data.errors,
             dispatch,
             id,
-            setAlert,
-            removeAlertAsync
+            setDangerAlert,
+            removeDangerAlertAsync
           );
           // response error is Object
         } else {
-          dispatch(setAlert({ id, message, alertTypeBgColorName: 'red-400' }));
-          dispatch(removeAlertAsync({ id, timeout: 5000 }));
+          dispatch(setDangerAlert({ id, message }));
+          dispatch(removeDangerAlertAsync({ id, timeout: 5000 }));
         }
         return rejectWithValue({
           status: 'failed',
