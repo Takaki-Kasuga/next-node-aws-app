@@ -25,8 +25,8 @@ export const errorAlert = (
   }[],
   dispatch: Dispatch,
   id: string,
-  setAlert: ActionCreatorWithPayload<DangerAlertStatus, string>,
-  removeAlertAsync: AsyncThunk<
+  setDangerAlert: ActionCreatorWithPayload<DangerAlertStatus, string>,
+  removeDangerAlertAsync: AsyncThunk<
     string,
     {
       id: string;
@@ -44,12 +44,12 @@ export const errorAlert = (
     }) => {
       console.log('処理が遠ています。');
       dispatch(
-        setAlert({
+        setDangerAlert({
           id,
           message: error.msg
         })
       );
-      dispatch<any>(removeAlertAsync({ id, timeout: 5000 }));
+      dispatch<any>(removeDangerAlertAsync({ id, timeout: 5000 }));
     }
   );
 };

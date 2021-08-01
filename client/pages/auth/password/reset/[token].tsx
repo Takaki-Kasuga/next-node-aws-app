@@ -48,7 +48,6 @@ const ResetPassword: FC = () => {
   console.log('watch', watch());
 
   useEffect(() => {
-    isAuth() && router.push('/');
     const decoded = jwt.decode(token) as { name: string } | null;
     if (decoded) {
       console.log('decoded', decoded);

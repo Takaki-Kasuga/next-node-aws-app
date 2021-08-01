@@ -381,6 +381,6 @@ export const authSlice = createSlice({
 export const { increment, decrement } = authSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectCount = (state: RootState) => state.auth;
+export const authStateSlece = (state: RootState) => state.auth;
 
 export default authSlice.reducer;

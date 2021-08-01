@@ -47,7 +47,7 @@ const Login: FC = () => {
     <Header>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
+        className='form'>
         <div className='mb-4'>
           <InputText
             id='email'

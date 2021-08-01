@@ -6,49 +6,37 @@ import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 // components
 import { ErrorMessage } from '../styles/index';
 
-interface InputTextProps {
+interface TextareaProps {
   register: UseFormRegisterReturn;
   error: FieldError;
-  inputType: string;
   placeholder: string;
   id: string;
   children: string;
-  hidden?: boolean;
-  accept?: string;
 }
 
-const InputText: FC<InputTextProps> = ({
+const Textarea: FC<TextareaProps> = ({
   register,
   error,
-  inputType,
   placeholder,
   id,
-  children,
-  hidden,
-  accept
-}) => {  return (
+  children
+}) => {
+  return (
     <Fragment>
       <label
-        className={
-          hidden ? 'upload-btn' : 'block text-gray-700 text-sm font-bold mb-2'
-        }
+        className='block text-gray-700 text-sm font-bold mb-2'
         htmlFor={id}>
         {children}
       </label>
-      <input
-        hidden={hidden}
-        accept={accept}
+      <textarea
         className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
         id={id}
         autoComplete='on'
         {...register}
-        type={inputType}
-        placeholder={placeholder}></input>
+        placeholder={placeholder}></textarea>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
     </Fragment>
   );
 };
 
-InputText.defaultProps = { hidden: false };
-
-export default InputText;
+export default Textarea;

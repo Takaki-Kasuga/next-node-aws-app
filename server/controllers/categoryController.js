@@ -13,9 +13,13 @@ const s3 = new AWS.S3({
 });
 
 exports.create = async (req, res) => {
+  console.log('ここまできてるよ＝');
+  console.log('req.body', req.body);
   let form = new formidable.IncomingForm();
+  console.log('ここまできてるよ＝');
   form.parse(req, (error, fields, files) => {
     if (error) {
+      console.log('エラー発生なう');
       return res.status(400).json({
         errors: [
           {
@@ -90,12 +94,16 @@ exports.create = async (req, res) => {
             status: 'failed'
           });
         }
-        return res.status(200).json(saveCategory);
+        return res.status(200).json({
+          saveCategory,
+          status: 'success',
+          message: 'you succeeded in uploading image'
+        });
       } catch (error) {
         return res.status(500).json({
           errors: [
             {
-              msg: 'Server error.'
+              msg: 'You cannnot save same name. Please try again.'
             }
           ],
           errorData: error,

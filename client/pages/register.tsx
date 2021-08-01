@@ -45,9 +45,7 @@ const Register: FC = () => {
 
   return (
     <Header>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className='bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4'>
+      <form onSubmit={handleSubmit(onSubmit)} className='form'>
         <div className='mb-4'>
           <InputText
             id='name'
