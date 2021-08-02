@@ -58,6 +58,11 @@ const Header: FC<HeaderProps> = ({ children }) => {
             <a className='text-blue-50 hover:text-blue-800 '>Home</a>
           </Link>
         </li>
+        <li className=''>
+          <Link href='/user/link/create'>
+            <a className='text-blue-50 hover:text-blue-800 '>Submit a Link</a>
+          </Link>
+        </li>
         {!isAuth() ? (
           <Fragment>
             <li className='mr-6'>

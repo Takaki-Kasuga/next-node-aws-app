@@ -6,7 +6,7 @@ import { getCokkie } from './storageToken';
 import { publicRuntimeConfig } from '../next.config';
 import { isAxiosError } from './axiosError';
 
-export interface AdminServerSideProps {
+export interface UserServerSideProps {
   user:
     | {
         role: string;
@@ -22,7 +22,7 @@ export interface AdminServerSideProps {
   token: string | undefined;
 }
 
-export const adminServerSideProps = async (ctx: NextPageContext) => {
+export const userServerSideProps = async (ctx: NextPageContext) => {
   const token = getCokkie(null, ctx);
   const config = {
     headers: {
@@ -40,23 +40,12 @@ export const adminServerSideProps = async (ctx: NextPageContext) => {
       };
     }
 
-    const response = await axios.get(
-      `${publicRuntimeConfig.API}/admin`,
-      config
-    );
+    const response = await axios.get(`${publicRuntimeConfig.API}/user`, config);
     // control auth and routing
-    if (response.data.user.role !== 'admin') {
-      return {
-        redirect: {
-          destination: '/',
-          permanent: false
-        }
-      };
-    }
+
     return {
       props: {
-        user: response.data.user,
-        token
+        user: response.data.user
       }
     };
   } catch (error) {
@@ -65,8 +54,7 @@ export const adminServerSideProps = async (ctx: NextPageContext) => {
       if (error.response!.status === 401) {
         return {
           props: {
-            user: 'No admin',
-            token
+            user: 'No user'
           },
           redirect: {
             destination: '/',

@@ -7,6 +7,7 @@ import { NextPageContext } from 'next';
 // helper function
 import { getCokkie } from '../../helpers/storageToken';
 import { isAxiosError } from '../../helpers/axiosError';
+import { userServerSideProps } from '../../helpers/userServerSideProps';
 // import { GetStaticProps, GetStaticPaths } from 'next';
 // import { ParsedUrlQuery } from 'node:querystring';
 
@@ -31,45 +32,7 @@ const UserDashboard: FC<UserDashboardProps | { user: string }> = ({ user }) => {
 };
 
 export const getServerSideProps = async (ctx: NextPageContext) => {
-  const token = getCokkie(null, ctx);
-  const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    }
-  };
-  try {
-    const response = await axios.get(`${publicRuntimeConfig.API}/user`, config);
-    // control auth and routing
-    if (response.data.user.role === 'admin') {
-      return {
-        redirect: {
-          destination: '/',
-          permanent: false
-        }
-      };
-    }
-    return {
-      props: {
-        user: response.data.user
-      }
-    };
-  } catch (error) {
-    console.log('エラーが起きています。');
-    if (isAxiosError(error)) {
-      if (error.response!.status === 401) {
-        return {
-          props: {
-            user: 'No user'
-          },
-          redirect: {
-            destination: '/',
-            permanent: false
-          }
-        };
-      }
-    }
-  }
+  userServerSideProps(ctx);
 };
 
 export default UserDashboard;
