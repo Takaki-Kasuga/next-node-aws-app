@@ -59,7 +59,7 @@ exports.create = async (req, res) => {
       Key: `category/${uuidv4()}`,
       Body: fs.readFileSync(image.path),
       ACL: 'public-read',
-      ContentType: 'image/jpg'
+      ContentType: files.image.type
     };
 
     s3.upload(params, async function (error, data) {
@@ -77,8 +77,12 @@ exports.create = async (req, res) => {
       console.log('AWS UPLOAD RES DATA', data);
       category.image.url = data.Location;
       category.image.key = data.Key;
-      // save to db
+
+      // posted by
+      category.postedBy = req.user._id;
+
       try {
+        // save to db
         console.log('ここまできています。', category);
         const saveCategory = await category.save();
         console.log('saveCategory', saveCategory);

@@ -22,7 +22,7 @@ const categoryRouter = require('./routes/categoryRoute');
 app.use(morgan('dev'));
 
 // parse request json data
-app.use(express.json({ extended: false }));
+app.use(express.json({ extended: false, limit: '5mb' }));
 
 // result cors error
 // app.use(cors());

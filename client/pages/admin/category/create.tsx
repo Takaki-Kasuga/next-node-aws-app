@@ -1,12 +1,15 @@
 import React, { FC, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { GetServerSideProps } from 'next';
 import { NextPageContext } from 'next';
 import Link from 'next/link';
 
 // npm package
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import _ from 'lodash';
+import Resizer from 'react-image-file-resizer';
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 
 // helper function
 import {
@@ -19,6 +22,7 @@ import { PageTitle } from '../../../components/atoms/index';
 import { Header } from '../../../components/layout/index';
 import { Loading } from '../../../components/helpers/index';
 import { InputText, Textarea } from '../../../components/forms/index';
+import { ErrorMessage } from '../../../components/styles/index';
 
 // slice
 import {
@@ -26,6 +30,26 @@ import {
   categoryStateSlice,
   defaultStatus
 } from '../../../features/category/categorySlice';
+
+import 'react-quill/dist/quill.snow.css';
+
+const resizeFile = (image: any) => {
+  return new Promise((resolve) => {
+    Resizer.imageFileResizer(
+      image,
+      720,
+      540,
+      'JPEG',
+      100,
+      0,
+      (uri) => {
+        console.log('uri', uri);
+        resolve(uri);
+      },
+      'file'
+    );
+  });
+};
 
 interface CategoryFormType {
   name: string;
@@ -46,6 +70,7 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
   }, []);
   const {
     reset,
+    control,
     register,
     handleSubmit,
     getValues,
@@ -56,13 +81,16 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
     defaultValues: { name: '', content: '', image: '' }
   });
 
-  const onSubmit: SubmitHandler<CategoryFormType> = (formData) => {
+  const onSubmit: SubmitHandler<CategoryFormType> = async (formData) => {
     if (token) {
       console.log('通過しました。');
       console.log(formData);
+
+      const resizeImage = await resizeFile(formData.image[0]);
+
       const addCategoryFormData = _.extend(formData, {
         token,
-        image: formData.image[0]
+        image: resizeImage
       });
       console.log('addCategoryFormData', addCategoryFormData);
       dispatch(addCategoryAsync(addCategoryFormData));
@@ -90,7 +118,34 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
           </InputText>
         </div>
         <div className='mb-4'>
-          <Textarea
+          <label
+            className='block text-gray-700 text-sm font-bold mb-2'
+            htmlFor='content'>
+            {' '}
+            Contents description
+          </label>
+          <Controller
+            name='content'
+            control={control}
+            rules={{
+              required: 'Please input content description',
+              minLength: {
+                value: 20,
+                message: 'Content must be at least 20 characters long'
+              }
+            }}
+            render={({ field }) => (
+              <ReactQuill
+                placeholder='Content description'
+                theme='snow'
+                {...field}
+              />
+            )}
+          />
+          {errors.content! && (
+            <ErrorMessage>{errors.content!.message}</ErrorMessage>
+          )}
+          {/* <Textarea
             id='content'
             placeholder='Content description'
             error={errors.content!}
@@ -102,7 +157,7 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
               }
             })}>
             Contents description
-          </Textarea>
+          </Textarea> */}
         </div>
         <div className='mb-4'>
           <InputText

@@ -1,4 +1,7 @@
 module.exports = {
+  images: {
+    domains: ['hacker-stack-contents.s3.ap-northeast-1.amazonaws.com']
+  },
   reactStrictMode: true,
   publicRuntimeConfig: {
     APP_NAME: 'NODE-REACT-AWS',
