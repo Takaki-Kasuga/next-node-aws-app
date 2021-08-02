@@ -136,7 +136,7 @@ exports.list = async (req, res) => {
       message: 'you succeeded in getting all category lists'
     });
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       errors: [
         {
           msg: ' Server Error'
