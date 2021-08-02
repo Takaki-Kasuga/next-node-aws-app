@@ -40,7 +40,6 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@tailwindcss/custom-forms": "^0.2.1",
     "@types/react": "17.0.15",
     "autoprefixer": "^9",
     "eslint": "7.31.0",

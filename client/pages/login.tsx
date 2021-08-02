@@ -45,9 +45,7 @@ const Login: FC = () => {
 
   return (
     <Header>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className='form'>
+      <form onSubmit={handleSubmit(onSubmit)} className='form'>
         <div className='mb-4'>
           <InputText
             id='email'

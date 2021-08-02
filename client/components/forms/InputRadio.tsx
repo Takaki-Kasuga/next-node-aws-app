@@ -32,7 +32,7 @@ const InputRadio: FC<InputRadioProps> = ({
           value={value}
           autoComplete='on'
         />
-        <span>{children}</span>
+        <span className='ml-3'>{children}</span>
       </label>
     </Fragment>
   );

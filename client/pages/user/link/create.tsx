@@ -38,7 +38,7 @@ interface CreateProps {
 interface AddLinkFormType {
   title: string;
   url: string;
-  categories: string[];
+  categories: string | string[];
   type: string;
   medium: string;
 }
@@ -52,7 +52,8 @@ const Create: FC<CreateProps> = ({ categories }) => {
     getValues,
     formState: { errors }
   } = useForm<AddLinkFormType>({
-    mode: 'onBlur'
+    mode: 'onBlur',
+    defaultValues: { type: 'Free', medium: 'Video' }
   });
 
   const onSubmit: SubmitHandler<AddLinkFormType> = (formData) => {
@@ -61,39 +62,43 @@ const Create: FC<CreateProps> = ({ categories }) => {
     // reset();
   };
 
+  console.log('errors', errors);
+
   return (
     <Header>
       <PageTitle>submit Link/URL</PageTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='md:grid md:grid-cols-4 md:gap-4'>
           <div>
-            <h3 className='text-gray-500 mb-5'>Categories</h3>
-            {errors.categories && (
-              <ErrorMessage>{errors.categories.message}</ErrorMessage>
-            )}
-            <ul className='md:h-72 md:overflow-scroll'>
-              {categories.map((category, index) => {
-                return (
-                  <Fragment key={index}>
-                    <li className='mb-3 '>
-                      <input
-                        value={category._id}
-                        {...register('categories', {
-                          required: 'Please check the category'
-                        })}
-                        id={category.slug}
-                        type='checkbox'
-                        className='mr-3'
-                      />
-                      <label htmlFor={category.slug}>{category.name}</label>
-                    </li>
-                  </Fragment>
-                );
-              })}
-            </ul>
-            <div className='mt-4'>
+            <div className='mb-5'>
               <h3 className='text-gray-500 mb-5'>Categories</h3>
-              <div className='mt-2'>
+              {errors.categories && (
+                <ErrorMessage>{errors.categories.message}</ErrorMessage>
+              )}
+              <ul className='md:h-72 md:overflow-scroll'>
+                {categories.map((category, index) => {
+                  return (
+                    <Fragment key={index}>
+                      <li className='mb-3 '>
+                        <input
+                          value={category._id}
+                          {...register('categories', {
+                            required: 'Please check the category'
+                          })}
+                          id={category.slug}
+                          type='checkbox'
+                          className='mr-3'
+                        />
+                        <label htmlFor={category.slug}>{category.name}</label>
+                      </li>
+                    </Fragment>
+                  );
+                })}
+              </ul>
+            </div>
+            <div>
+              <div className='mb-5'>
+                <h3 className='text-gray-500 mb-3'>Type</h3>
                 <InputRadio
                   register={register('type', {
                     required: 'Please select type'
@@ -111,6 +116,27 @@ const Create: FC<CreateProps> = ({ categories }) => {
                   type='type'
                   value='Paid'>
                   Paid
+                </InputRadio>
+              </div>
+              <div>
+                <h3 className='text-gray-500 mb-3'>Medium</h3>
+                <InputRadio
+                  register={register('medium', {
+                    required: 'Please select medium'
+                  })}
+                  id='video'
+                  type='medium'
+                  value='Video'>
+                  Video
+                </InputRadio>
+                <InputRadio
+                  register={register('medium', {
+                    required: 'Please select medium'
+                  })}
+                  id='book'
+                  type='medium'
+                  value='Book'>
+                  Book
                 </InputRadio>
               </div>
             </div>
