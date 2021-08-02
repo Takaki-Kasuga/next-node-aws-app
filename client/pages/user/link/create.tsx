@@ -8,7 +8,7 @@ import axios from 'axios';
 // components
 import { Header } from '../../../components/layout/index';
 import { PageTitle } from '../../../components/atoms/index';
-import { InputText } from '../../../components/forms/index';
+import { InputText, InputRadio } from '../../../components/forms/index';
 import { ErrorMessage } from '../../../components/styles/index';
 
 // helper function
@@ -91,6 +91,29 @@ const Create: FC<CreateProps> = ({ categories }) => {
                 );
               })}
             </ul>
+            <div className='mt-4'>
+              <h3 className='text-gray-500 mb-5'>Categories</h3>
+              <div className='mt-2'>
+                <InputRadio
+                  register={register('type', {
+                    required: 'Please select type'
+                  })}
+                  id='free'
+                  type='type'
+                  value='Free'>
+                  Free
+                </InputRadio>
+                <InputRadio
+                  register={register('type', {
+                    required: 'Please select type'
+                  })}
+                  id='paid'
+                  type='type'
+                  value='Paid'>
+                  Paid
+                </InputRadio>
+              </div>
+            </div>
           </div>
           <div className='md:col-span-3'>
             <div className='mb-4'>
