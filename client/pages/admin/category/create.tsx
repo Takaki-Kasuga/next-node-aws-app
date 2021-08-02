@@ -10,6 +10,7 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import _ from 'lodash';
 import Resizer from 'react-image-file-resizer';
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+import striptags from 'striptags';
 
 // helper function
 import {
@@ -121,7 +122,6 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
           <label
             className='block text-gray-700 text-sm font-bold mb-2'
             htmlFor='content'>
-            {' '}
             Contents description
           </label>
           <Controller
@@ -129,9 +129,13 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
             control={control}
             rules={{
               required: 'Please input content description',
-              minLength: {
-                value: 20,
-                message: 'Content must be at least 20 characters long'
+              validate: (value) => {
+                const stringNum = striptags(value);
+                console.log('stringNum', stringNum);
+                return (
+                  stringNum.length > 20 ||
+                  'Content must be at least 20 characters long'
+                );
               }
             }}
             render={({ field }) => (
