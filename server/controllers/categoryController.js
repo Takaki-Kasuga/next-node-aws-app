@@ -1,5 +1,6 @@
 const fs = require('fs');
 const Category = require('../models/category');
+const Link = require('../models/link');
 const slugify = require('slugify');
 const formidable = require('formidable');
 const AWS = require('aws-sdk');
@@ -124,7 +125,7 @@ exports.list = async (req, res) => {
       return res.status(400).json({
         errors: [
           {
-            msg: 'Category could not load'
+            msg: 'Category could not be loaded'
           }
         ],
         status: 'failed'
@@ -147,5 +148,72 @@ exports.list = async (req, res) => {
     });
   }
 };
-exports.read = async (req, res) => {};
+exports.read = async (req, res) => {
+  const { slug } = req.params;
+  let limitFields = req.body.limit ? parseInt(req.body.limit) : 10;
+  let skipFields = req.body.skip ? parseInt(req.body.skip) : 0;
+  console.log(
+    'limitFields',
+    limitFields,
+    'skipFields',
+    skipFields,
+    'slug',
+    slug
+  );
+  try {
+    const getCategory = await Category.findOne({ slug }).populate('postedBy', [
+      '_id',
+      'name',
+      'username'
+    ]);
+    console.log('getCategory', getCategory);
+    if (!getCategory) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Category could not be loaded'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+
+    const allLinkLists = await Link.find({ categories: getCategory })
+      .populate('postedBy', ['_id', 'name', 'username'])
+      .populate('categories', ['name'])
+      .sort({ createdAt: -1 })
+      .limit(limitFields)
+      .skip(skipFields);
+    console.log('allLinkLists', allLinkLists);
+
+    if (!allLinkLists) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Links of category could not be loaded'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+
+    res.status(200).json({
+      category: getCategory,
+      links: allLinkLists,
+      status: 'success',
+      message: 'you succeeded in getting the category'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      errors: [
+        {
+          msg: ' Server Error'
+        }
+      ],
+      errorData: error,
+      status: 'failed'
+    });
+  }
+};
+exports.update = async (req, res) => {};
 exports.remove = async (req, res) => {};
