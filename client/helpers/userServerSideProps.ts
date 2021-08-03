@@ -30,22 +30,23 @@ export const userServerSideProps = async (ctx: NextPageContext) => {
       'Authorization': `Bearer ${token}`
     }
   };
+  // if have not token on cookie
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false
+      }
+    };
+  }
   try {
-    if (!token) {
-      return {
-        redirect: {
-          destination: '/',
-          permanent: false
-        }
-      };
-    }
-
     const response = await axios.get(`${publicRuntimeConfig.API}/user`, config);
     // control auth and routing
 
     return {
       props: {
-        user: response.data.user
+        user: response.data.user,
+        token
       }
     };
   } catch (error) {
@@ -54,7 +55,8 @@ export const userServerSideProps = async (ctx: NextPageContext) => {
       if (error.response!.status === 401) {
         return {
           props: {
-            user: 'No user'
+            user: 'No user',
+            token
           },
           redirect: {
             destination: '/',

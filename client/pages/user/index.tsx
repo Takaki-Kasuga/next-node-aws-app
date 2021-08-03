@@ -32,7 +32,7 @@ const UserDashboard: FC<UserDashboardProps | { user: string }> = ({ user }) => {
 };
 
 export const getServerSideProps = async (ctx: NextPageContext) => {
-  userServerSideProps(ctx);
+  return userServerSideProps(ctx);
 };
 
 export default UserDashboard;

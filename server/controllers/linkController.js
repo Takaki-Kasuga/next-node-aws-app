@@ -14,12 +14,11 @@ exports.create = async (req, res) => {
     url,
     type,
     medium,
-    slug
+    slug,
+    categories
   });
 
-  let arrayOfCategories = categories && categories.split(',');
   link.postedBy = req.user._id;
-  link.categories = arrayOfCategories;
 
   try {
     const saveLink = await link.save();

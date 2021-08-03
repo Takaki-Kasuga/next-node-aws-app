@@ -1,3 +1,6 @@
+// https://www.youtube.com/watch?v=U-iz8b4RExA
+// https://github.com/satansdeer/ultimate-react-hook-form-form/blob/master/src/components/FileInput.js
+
 import React, { FC, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
