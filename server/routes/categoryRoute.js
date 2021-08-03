@@ -32,7 +32,7 @@ router.route('/categories').get(categoryController.list);
 
 router
   .route('/category/:slug')
-  .get(categoryController.read)
+  .post(categoryController.read)
   .patch(
     decodedTokenIntoMiddleware,
     categoryUpdateValidator,

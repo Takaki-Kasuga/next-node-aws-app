@@ -33,7 +33,7 @@ const Home: FC<HomeProps> = ({ categories }) => {
       <div className='md:flex md:flex-wrap text-center'>
         {categories.map((category, index) => {
           return (
-            <Link href='/' key={index}>
+            <Link href={`/links/${category.slug}`} key={index}>
               <a className='primary-btn block md:w-4/12 m-5 md:m-0 md:mb-5'>
                 <div>
                   <Image
