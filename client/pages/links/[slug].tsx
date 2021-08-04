@@ -1,4 +1,5 @@
 import React, { FC, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { ParsedUrlQuery } from 'querystring';
 import { GetStaticProps, GetStaticPropsContext } from 'next';
@@ -7,9 +8,15 @@ import { GetStaticProps, GetStaticPropsContext } from 'next';
 import axios from 'axios';
 import ReactHtmlParser from 'react-html-parser';
 import moment from 'moment';
+const InfiniteScroll = dynamic(() => import('react-infinite-scroller'), {
+  ssr: false
+});
 
 // components
 import { Header } from '../../components/layout/index';
+const DynamicLoadingSpinner = dynamic(
+  () => import('../../components/helpers/LoadingSpinner')
+);
 
 // API
 import { API } from '../../config/config';
@@ -78,6 +85,20 @@ const Links: FC<LinksProps> = ({
   const [skip, setSkip] = useState<number>(linkSkip);
   const [size, setSize] = useState<number>(totalLinks);
 
+  const incrementClick = async (linkId: string) => {
+    const response = await axios.put(`${API}/click-count`, { linkId });
+    const tagetObjectIndex = allLinks.findIndex((link) => {
+      console.log(
+        'link._id = response.data.links._id',
+        link._id === response.data.links._id
+      );
+      return link._id === response.data.links._id;
+    });
+    const cloneAllLinks = [...allLinks];
+    cloneAllLinks.splice(tagetObjectIndex, 1, response.data.links);
+    setAllLinks([...cloneAllLinks]);
+  };
+
   const loadMore = async () => {
     const toSkip = skip + limit;
     const response = await axios.post(`${API}/category/${slug}`, {
@@ -105,6 +126,9 @@ const Links: FC<LinksProps> = ({
                   <div className='md:flex md:justify-between md:items-center mb-5'>
                     <div className='md:w-8/12'>
                       <a
+                        onClick={() => {
+                          incrementClick(link._id);
+                        }}
                         className='text-blue-600 hover:text-white hover:underline'
                         href={link.url}
                         target='_blank'
@@ -114,10 +138,11 @@ const Links: FC<LinksProps> = ({
                       </a>
                     </div>
                     <div className='md:w-3/12'>
-                      <span>
+                      <span className='block'>
                         {moment(link.createdAt).fromNow()} by{' '}
                         {link.postedBy.name}
                       </span>
+                      <span className='block'>{link.clicks} clicks</span>
                     </div>
                   </div>
                   <div>
@@ -152,10 +177,17 @@ const Links: FC<LinksProps> = ({
           </div>
         </div>
       </div>
+
       {size > 0 && size >= limit && (
-        <button onClick={loadMore} className='primary-btn'>
-          Load More
-        </button>
+        <InfiniteScroll
+          pageStart={0}
+          loadMore={loadMore}
+          hasMore={size > 0 && size >= limit ? true : false}
+          loader={
+            <div className='text-center' key={0}>
+              <DynamicLoadingSpinner />
+            </div>
+          }></InfiniteScroll>
       )}
     </Header>
   );
@@ -169,7 +201,7 @@ export const getStaticProps: GetStaticProps = async (
 ) => {
   console.log('Regenerating...(getStaticProps)');
   const skip = 0;
-  const limit = 1;
+  const limit = 2;
   const { slug } = ctx.params as SlugParams;
   const response = await axios.post(`${API}/category/${slug}`, { skip, limit });
   console.log('response', response.data.links);

@@ -91,7 +91,9 @@ exports.clickCount = async (req, res) => {
         $inc: { clicks: 1 }
       },
       { new: true }
-    );
+    )
+      .populate('postedBy', ['_id', 'name', 'username'])
+      .populate('categories', ['name']);
     if (!updateLinkClicks) {
       return res.status(400).json({
         errors: [
