@@ -82,3 +82,40 @@ exports.list = async (req, res) => {
 exports.read = async (req, res) => {};
 exports.update = async (req, res) => {};
 exports.remove = async (req, res) => {};
+exports.clickCount = async (req, res) => {
+  const { linkId } = req.body;
+  try {
+    const updateLinkClicks = await Link.findByIdAndUpdate(
+      linkId,
+      {
+        $inc: { clicks: 1 }
+      },
+      { new: true }
+    );
+    if (!updateLinkClicks) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Could not view counts'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+    return res.status(200).json({
+      links: updateLinkClicks,
+      status: 'success',
+      message: 'you succeeded in incrementing click number'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      errors: [
+        {
+          msg: 'Server Error'
+        }
+      ],
+      errorData: error,
+      status: 'failed'
+    });
+  }
+};

@@ -31,6 +31,7 @@ router
   );
 
 router.route('/links').get(linkController.list);
+router.route('/click-count').put(linkController.clickCount);
 
 router
   .route('/link/:slug')

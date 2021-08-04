@@ -34,31 +34,30 @@ interface CategoryRes {
   __v: number;
 }
 
-type LinksRes = [
-  {
-    categories: {
-      _id: string;
-      name: string;
-    }[];
-    type: string;
-    medium: string;
-    clicks: number;
+type LinksRes = {
+  categories: {
     _id: string;
-    title: string;
-    url: string;
-    slug: string;
-    postedBy: {
-      _id: string;
-      username: string;
-      name: string;
-    };
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  }
-];
+    name: string;
+  }[];
+  type: string;
+  medium: string;
+  clicks: number;
+  _id: string;
+  title: string;
+  url: string;
+  slug: string;
+  postedBy: {
+    _id: string;
+    username: string;
+    name: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}[];
 
 interface LinksProps {
+  slug: string;
   category: CategoryRes;
   links: LinksRes;
   totalLinks: number;
@@ -67,6 +66,7 @@ interface LinksProps {
 }
 
 const Links: FC<LinksProps> = ({
+  slug,
   category,
   links,
   totalLinks,
@@ -74,6 +74,22 @@ const Links: FC<LinksProps> = ({
   linkSkip
 }) => {
   const [allLinks, setAllLinks] = useState<LinksRes>(links);
+  const [limit, setLimit] = useState<number>(linksLimit);
+  const [skip, setSkip] = useState<number>(linkSkip);
+  const [size, setSize] = useState<number>(totalLinks);
+
+  const loadMore = async () => {
+    const toSkip = skip + limit;
+    const response = await axios.post(`${API}/category/${slug}`, {
+      skip: toSkip,
+      limit
+    });
+    setAllLinks([...allLinks, ...response.data.links]);
+    console.log('allLinks', allLinks);
+    console.log('response.data.links.length', response.data.links.length);
+    setSize(response.data.links.length);
+    setSkip(toSkip);
+  };
   return (
     <Header>
       <div className='flex flex-col-reverse md:grid md:grid-cols-4 md:gap-4'>
@@ -85,7 +101,7 @@ const Links: FC<LinksProps> = ({
           <div>
             {allLinks.map((link, index) => {
               return (
-                <div key={index} className='bg-blue-200 p-5 rounded'>
+                <article key={index} className='bg-blue-200 p-5 rounded mb-5'>
                   <div className='md:flex md:justify-between md:items-center mb-5'>
                     <div className='md:w-8/12'>
                       <a
@@ -116,7 +132,7 @@ const Links: FC<LinksProps> = ({
                       );
                     })}
                   </div>
-                </div>
+                </article>
               );
             })}
           </div>
@@ -136,6 +152,11 @@ const Links: FC<LinksProps> = ({
           </div>
         </div>
       </div>
+      {size > 0 && size >= limit && (
+        <button onClick={loadMore} className='primary-btn'>
+          Load More
+        </button>
+      )}
     </Header>
   );
 };
@@ -154,6 +175,7 @@ export const getStaticProps: GetStaticProps = async (
   console.log('response', response.data.links);
   return {
     props: {
+      slug,
       category: response.data.category,
       links: response.data.links,
       totalLinks: response.data.links.length,
