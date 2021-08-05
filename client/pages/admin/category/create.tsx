@@ -99,7 +99,7 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
       console.log('addCategoryFormData', addCategoryFormData);
       dispatch(addCategoryAsync(addCategoryFormData));
       if (category.status === 'success') {
-        reset();
+        // reset();
       }
     }
   };

@@ -2,7 +2,8 @@ import {
   createAsyncThunk,
   createSlice,
   PayloadAction,
-  Dispatch
+  Dispatch,
+  current
 } from '@reduxjs/toolkit';
 import { RootState } from '../../app/store';
 
@@ -75,8 +76,8 @@ export const addCategoryAsync = createAsyncThunk<
         dispatch,
         response
       });
-      console.log('response.data', response.data);
-      return response.data;
+      console.log('response.data.category', response.data.category);
+      return response.data.category;
     } catch (error) {
       console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
@@ -140,8 +141,11 @@ export const categorySlice = createSlice({
       .addCase(
         addCategoryAsync.fulfilled,
         (state, action: PayloadAction<CategoryData>) => {
-          state.categories.push(action.payload);
-          return { ...state, status: 'success' };
+          return {
+            ...state,
+            categories: [...state.categories, action.payload],
+            status: 'success'
+          };
         }
       )
       .addCase(

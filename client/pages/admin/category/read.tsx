@@ -54,7 +54,7 @@ const Read: FC<AdminServerSideProps> = ({ user, token }) => {
                       src={category.image.url}
                       alt={category.name}
                       layout='fill'
-                      objectFit='cover'
+                      objectFit='contain'
                     />
                   </figure>
                   <h3 className='text-center p-1'>{category.name}</h3>

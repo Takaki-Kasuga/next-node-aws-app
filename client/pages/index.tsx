@@ -41,7 +41,7 @@ const Home: FC<HomeProps> = ({ categories }) => {
                     width={340}
                     height={160}
                     alt={category.name}
-                    objectFit='cover'
+                    objectFit='contain'
                   />
                 </div>
                 <div>

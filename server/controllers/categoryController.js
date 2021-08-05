@@ -54,10 +54,12 @@ exports.create = async (req, res) => {
       });
     }
 
+    console.log('files.image.type', files.image.type);
+    const extensionType = files.image.type.replace('image/', '');
     // upload image to s3
     const params = {
       Bucket: 'hacker-stack-contents',
-      Key: `category/${uuidv4()}`,
+      Key: `category/${uuidv4()}.${extensionType}`,
       Body: fs.readFileSync(image.path),
       ACL: 'public-read',
       ContentType: files.image.type
@@ -242,7 +244,7 @@ exports.update = async (req, res) => {
     // remove the existing image from s3 backets before uploading new/updared one
     const deleteParams = {
       Bucket: 'hacker-stack-contents',
-      Key: `category/${updateCategoy.image.key}`
+      Key: updateCategoy.image.key
     };
     try {
       s3.deleteObject(deleteParams, (error, data) => {
@@ -264,7 +266,7 @@ exports.update = async (req, res) => {
       // handle upload image s3
       const params = {
         Bucket: 'hacker-stack-contents',
-        Key: `category/${uuidv4()}`,
+        Key: `${uuidv4()}`,
         Body: fs.readFileSync(image.path),
         ACL: 'public-read',
         ContentType: files.image.type
@@ -355,25 +357,25 @@ exports.remove = async (req, res) => {
     });
   }
 
+  console.log('removedCategory', removedCategory);
   const deleteParams = {
     Bucket: 'hacker-stack-contents',
-    Key: `category/${removedCategory.image.key}`
+    Key: removedCategory.image.key
   };
 
-  s3.deleteObject(deleteParams, (error, data) => {
-    if (error) {
+  s3.deleteObject(deleteParams, function (err, data) {
+    if (err) {
       return res.status(400).json({
         errors: [
           {
             msg: `Error in deleting to s3 file this category/${removedCategory.image.key}`
           }
         ],
-        errorData: error,
+        errorData: err,
         status: 'failed'
       });
-    } else {
-      console.log('this image deleted', data);
     }
+    console.log('this image deleted', data);
   });
 
   return res.status(200).json({

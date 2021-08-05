@@ -168,7 +168,7 @@ const Links: FC<LinksProps> = ({
               src={category.image.url}
               alt={category.name}
               layout='fill'
-              objectFit='cover'
+              objectFit='contain'
             />
           </figure>
           <div>
