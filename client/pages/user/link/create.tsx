@@ -215,7 +215,7 @@ export const getServerSideProps = async (ctx: NextPageContext) => {
   }
   try {
     const response = await axios.get(`${publicRuntimeConfig.API}/categories`);
-    const categories = response.data.allCategoryLists;
+    const categories = response.data.categories;
     return {
       props: {
         getCategories: categories,

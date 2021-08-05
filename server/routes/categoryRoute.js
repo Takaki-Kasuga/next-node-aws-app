@@ -33,12 +33,12 @@ router.route('/categories').get(categoryController.list);
 router
   .route('/category/:slug')
   .post(categoryController.read)
-  .patch(
+  .put(
     ...decodedTokenIntoMiddleware(),
-    categoryUpdateValidator,
-    runValidation,
+    // categoryUpdateValidator,
+    // runValidation,
     adminMiddleware,
-    categoryController.create
+    categoryController.update
   )
   .delete(
     ...decodedTokenIntoMiddleware(),

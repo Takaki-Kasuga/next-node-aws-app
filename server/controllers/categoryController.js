@@ -220,125 +220,143 @@ exports.read = async (req, res) => {
 
 exports.update = async (req, res) => {
   const { slug } = req.params;
-  const { name, image, content } = req.params;
-
-  const updateCategoy = await Category.findOneAndUpdate(
-    { slug },
-    { name, content },
-    { new: true }
-  );
-
-  if (!updateCategoy) {
-    return res.status(400).json({
-      errors: [
-        {
-          msg: 'Could not find category to update by slug'
-        }
-      ],
-      status: 'failed'
-    });
-  }
-
-  console.log('updateCategoy', updateCategoy);
-  if (image) {
-    // remove the existing image from s3 backets before uploading new/updared one
-    const deleteParams = {
-      Bucket: 'hacker-stack-contents',
-      Key: updateCategoy.image.key
-    };
-    try {
-      s3.deleteObject(deleteParams, (error, data) => {
-        if (error) {
-          return res.status(400).json({
-            errors: [
-              {
-                msg: `Error in deleting to s3 file this category/${updateCategoy.image.key}`
-              }
-            ],
-            errorData: error,
-            status: 'failed'
-          });
-        } else {
-          console.log('this image deleted', data);
-        }
-      });
-
-      // handle upload image s3
-      const params = {
-        Bucket: 'hacker-stack-contents',
-        Key: `${uuidv4()}`,
-        Body: fs.readFileSync(image.path),
-        ACL: 'public-read',
-        ContentType: files.image.type
-      };
-
-      s3.upload(params, async function (error, data) {
-        if (error) {
-          return res.status(500).json({
-            errors: [
-              {
-                msg: 'Upload to s3 failed'
-              }
-            ],
-            errorData: error,
-            status: 'failed'
-          });
-        }
-        console.log('AWS UPLOAD RES DATA', data);
-        updateCategoy.image.url = data.Location;
-        updateCategoy.image.key = data.Key;
-
-        try {
-          // save to db
-          console.log('updateCategoy', updateCategoy);
-          const saveCategory = await updateCategoy.save();
-          console.log('saveCategory', saveCategory);
-          if (!saveCategory) {
-            return res.status(400).json({
-              errors: [
-                {
-                  msg: 'Error saving category database'
-                }
-              ],
-              errorData: error,
-              status: 'failed'
-            });
-          }
-          return res.status(200).json({
-            category: saveCategory,
-            status: 'success',
-            message: 'you succeeded in uploading category with image'
-          });
-        } catch (error) {
-          return res.status(500).json({
-            errors: [
-              {
-                msg: 'You cannnot save same name. Please try again.'
-              }
-            ],
-            errorData: error,
-            status: 'failed'
-          });
-        }
-      });
-    } catch (error) {
-      return res.status(500).json({
+  let form = new formidable.IncomingForm();
+  form.parse(req, async (error, fields, files) => {
+    if (error) {
+      console.log('エラー発生なう');
+      return res.status(400).json({
         errors: [
           {
-            msg: ' Server Error'
+            msg: 'Image could not upload'
           }
         ],
         errorData: error,
         status: 'failed'
       });
     }
-  } else {
-    return res.status(200).json({
-      category: updateCategoy,
-      status: 'success',
-      message: 'you succeeded in uploading category without image'
-    });
-  }
+
+    const { name, content } = fields;
+    const { image } = files;
+
+    const updateCategoy = await Category.findOneAndUpdate(
+      { slug },
+      { name, content, slug: slugify(name) },
+      { new: true }
+    );
+
+    if (!updateCategoy) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Could not find category to update by slug'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+
+    console.log('updateCategoy', updateCategoy);
+    if (image) {
+      // remove the existing image from s3 backets before uploading new/updared one
+      const deleteParams = {
+        Bucket: 'hacker-stack-contents',
+        Key: updateCategoy.image.key
+      };
+      try {
+        s3.deleteObject(deleteParams, (error, data) => {
+          if (error) {
+            return res.status(400).json({
+              errors: [
+                {
+                  msg: `Error in deleting to s3 file this category/${updateCategoy.image.key}`
+                }
+              ],
+              errorData: error,
+              status: 'failed'
+            });
+          } else {
+            console.log('this image deleted', data);
+          }
+        });
+
+        const extensionType = files.image.type.replace('image/', '');
+        // handle upload image s3
+        const params = {
+          Bucket: 'hacker-stack-contents',
+          Key: `category/${uuidv4()}.${extensionType}`,
+          Body: fs.readFileSync(image.path),
+          ACL: 'public-read',
+          ContentType: files.image.type
+        };
+
+        s3.upload(params, async function (error, data) {
+          if (error) {
+            return res.status(500).json({
+              errors: [
+                {
+                  msg: 'Upload to s3 failed'
+                }
+              ],
+              errorData: error,
+              status: 'failed'
+            });
+          }
+          console.log('AWS UPLOAD RES DATA', data);
+          updateCategoy.image.url = data.Location;
+          updateCategoy.image.key = data.Key;
+
+          try {
+            // save to db
+            console.log('updateCategoy', updateCategoy);
+            const saveCategory = await updateCategoy.save();
+            console.log('saveCategory', saveCategory);
+            if (!saveCategory) {
+              return res.status(400).json({
+                errors: [
+                  {
+                    msg: 'Error saving category database'
+                  }
+                ],
+                errorData: error,
+                status: 'failed'
+              });
+            }
+            return res.status(200).json({
+              category: saveCategory,
+              status: 'success',
+              message: 'you succeeded in uploading category with image'
+            });
+          } catch (error) {
+            return res.status(500).json({
+              errors: [
+                {
+                  msg: 'You cannnot save same name. Please try again.'
+                }
+              ],
+              errorData: error,
+              status: 'failed'
+            });
+          }
+        });
+      } catch (error) {
+        return res.status(500).json({
+          errors: [
+            {
+              msg: ' Server Error'
+            }
+          ],
+          errorData: error,
+          status: 'failed'
+        });
+      }
+    } else {
+      return res.status(200).json({
+        category: updateCategoy,
+        status: 'success',
+        message: 'you succeeded in uploading category without image'
+      });
+    }
+  });
 };
 
 exports.remove = async (req, res) => {

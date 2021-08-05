@@ -10,6 +10,7 @@ import { RootState } from '../../app/store';
 // import API
 import {
   addCategoryAPI,
+  updateCategoryAPI,
   getCategoriesAPI,
   deleteCategoriesAPI
 } from './categoryAPI';
@@ -72,6 +73,36 @@ export const addCategoryAsync = createAsyncThunk<
     console.log('ここまできているよん');
     try {
       const response = await addCategoryAPI(addCategoryFormData);
+      successAlertFunc({
+        dispatch,
+        response
+      });
+      console.log('response.data.category', response.data.category);
+      return response.data.category;
+    } catch (error) {
+      console.log('エラーですt', error);
+      return errorHandling({ error, dispatch, rejectWithValue });
+    }
+  }
+);
+
+//@Desc   Register User
+export const updateCategoryAsync = createAsyncThunk<
+  CategoryData,
+  {
+    name: string;
+    content: string;
+    image: any;
+    token: string;
+    slug: string;
+  },
+  ThunkConfig
+>(
+  'auth/updateCategoryAsync',
+  async (updateCategoryFormData, { dispatch, rejectWithValue }) => {
+    console.log('ここまできているよん');
+    try {
+      const response = await updateCategoryAPI(updateCategoryFormData);
       successAlertFunc({
         dispatch,
         response
@@ -150,6 +181,38 @@ export const categorySlice = createSlice({
       )
       .addCase(
         addCategoryAsync.rejected,
+        (state: any, action: PayloadAction<unknown>) => {
+          const { status, message } = action.payload as Rejected;
+          console.log('action.payload', action.payload);
+          return { ...state, status, message };
+        }
+      )
+      .addCase(updateCategoryAsync.pending, (state) => {
+        return { ...state, status: 'loading' };
+      })
+      .addCase(
+        updateCategoryAsync.fulfilled,
+        (state, action: PayloadAction<CategoryData>) => {
+          if (state.categories) {
+            const updateCategory = state.categories.filter((category) => {
+              return category._id !== action.payload._id;
+            });
+            return {
+              ...state,
+              categories: [...updateCategory, action.payload],
+              status: 'success'
+            };
+          } else {
+            return {
+              ...state,
+              categories: [{ ...action.payload }],
+              status: 'success'
+            };
+          }
+        }
+      )
+      .addCase(
+        updateCategoryAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
           console.log('action.payload', action.payload);

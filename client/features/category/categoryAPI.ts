@@ -1,11 +1,19 @@
 import axios from 'axios';
 import { API } from '../../config/config';
 
-interface addCategoryAPITypes {
+interface AddCategoryAPITypes {
   name: string;
   content: string;
   image: any;
   token: string;
+}
+
+interface UpdateCategoryAPITypes {
+  name: string;
+  content: string;
+  image: any;
+  token: string;
+  slug: string;
 }
 
 export const addCategoryAPI = ({
@@ -13,7 +21,7 @@ export const addCategoryAPI = ({
   content,
   image,
   token
-}: addCategoryAPITypes) => {
+}: AddCategoryAPITypes) => {
   const config = {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -29,6 +37,30 @@ export const addCategoryAPI = ({
   console.log('body', body);
 
   return axios.post(`${API}/category`, body, config);
+};
+
+export const updateCategoryAPI = ({
+  name,
+  content,
+  image,
+  token,
+  slug
+}: UpdateCategoryAPITypes) => {
+  const config = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      'Authorization': `Bearer ${token}`
+    }
+  };
+
+  const body = new FormData();
+  body.append('name', name);
+  body.append('content', content);
+  body.append('image', image);
+
+  console.log('body', body);
+
+  return axios.put(`${API}/category/${slug}`, body, config);
 };
 
 export const getCategoriesAPI = () => {

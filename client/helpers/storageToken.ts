@@ -1,6 +1,10 @@
 import cookie from 'js-cookie';
 import nookies from 'nookies';
-import { NextPageContext } from 'next';
+import {
+  NextPageContext,
+  GetServerSidePropsContext,
+  GetStaticPropsContext
+} from 'next';
 import Router from 'next/router';
 import { LoginReturnData } from '../features/auth/authSlice';
 interface callbackType {
@@ -46,7 +50,10 @@ export const getCookieFromServer = (ctx: NextPageContext) => {
   }
 };
 
-export const getCokkie = (key: string | null, ctx?: NextPageContext) => {
+export const getCokkie = (
+  key: string | null,
+  ctx?: NextPageContext | GetServerSidePropsContext | GetStaticPropsContext
+) => {
   console.log('process.browser', process.browser);
   return process.browser
     ? getCookieFromBrowser(key!)
