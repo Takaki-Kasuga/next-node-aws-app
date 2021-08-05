@@ -30,3 +30,26 @@ export const addCategoryAPI = ({
 
   return axios.post(`${API}/category`, body, config);
 };
+
+export const getCategoriesAPI = () => {
+  return axios.get(`${API}/categories`);
+};
+
+export const deleteCategoriesAPI = ({
+  slug,
+  token
+}: {
+  slug: string;
+  token: string;
+}) => {
+  console.log('token', token);
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  };
+  console.log('ここまできています');
+  console.log('slug', slug);
+  return axios.delete(`${API}/category/${slug}`, config);
+};

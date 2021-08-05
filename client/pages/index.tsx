@@ -59,7 +59,7 @@ const Home: FC<HomeProps> = ({ categories }) => {
 export const getStaticProps = async () => {
   console.log('Re-generating...');
   const response = await axios.get(`${publicRuntimeConfig.API}/categories`);
-  const categories = response.data.allCategoryLists;
+  const categories = response.data.categories;
 
   return {
     props: {

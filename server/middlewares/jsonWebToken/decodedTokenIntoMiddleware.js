@@ -7,6 +7,7 @@ const expressJwt = require('express-jwt');
 // });
 
 exports.decodedTokenIntoMiddleware = () => {
+  console.log('decodedTokenIntoMiddleware');
   return [
     expressJwt({
       secret: process.env.JWT_SECRET,

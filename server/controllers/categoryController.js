@@ -99,7 +99,7 @@ exports.create = async (req, res) => {
           });
         }
         return res.status(200).json({
-          saveCategory,
+          category: saveCategory,
           status: 'success',
           message: 'you succeeded in uploading image'
         });
@@ -132,7 +132,7 @@ exports.list = async (req, res) => {
       });
     }
     res.status(200).json({
-      allCategoryLists,
+      categories: allCategoryLists,
       status: 'success',
       message: 'you succeeded in getting all category lists'
     });
@@ -215,5 +215,170 @@ exports.read = async (req, res) => {
     });
   }
 };
-exports.update = async (req, res) => {};
-exports.remove = async (req, res) => {};
+
+exports.update = async (req, res) => {
+  const { slug } = req.params;
+  const { name, image, content } = req.params;
+
+  const updateCategoy = await Category.findOneAndUpdate(
+    { slug },
+    { name, content },
+    { new: true }
+  );
+
+  if (!updateCategoy) {
+    return res.status(400).json({
+      errors: [
+        {
+          msg: 'Could not find category to update by slug'
+        }
+      ],
+      status: 'failed'
+    });
+  }
+
+  console.log('updateCategoy', updateCategoy);
+  if (image) {
+    // remove the existing image from s3 backets before uploading new/updared one
+    const deleteParams = {
+      Bucket: 'hacker-stack-contents',
+      Key: `category/${updateCategoy.image.key}`
+    };
+    try {
+      s3.deleteObject(deleteParams, (error, data) => {
+        if (error) {
+          return res.status(400).json({
+            errors: [
+              {
+                msg: `Error in deleting to s3 file this category/${updateCategoy.image.key}`
+              }
+            ],
+            errorData: error,
+            status: 'failed'
+          });
+        } else {
+          console.log('this image deleted', data);
+        }
+      });
+
+      // handle upload image s3
+      const params = {
+        Bucket: 'hacker-stack-contents',
+        Key: `category/${uuidv4()}`,
+        Body: fs.readFileSync(image.path),
+        ACL: 'public-read',
+        ContentType: files.image.type
+      };
+
+      s3.upload(params, async function (error, data) {
+        if (error) {
+          return res.status(500).json({
+            errors: [
+              {
+                msg: 'Upload to s3 failed'
+              }
+            ],
+            errorData: error,
+            status: 'failed'
+          });
+        }
+        console.log('AWS UPLOAD RES DATA', data);
+        updateCategoy.image.url = data.Location;
+        updateCategoy.image.key = data.Key;
+
+        try {
+          // save to db
+          console.log('updateCategoy', updateCategoy);
+          const saveCategory = await updateCategoy.save();
+          console.log('saveCategory', saveCategory);
+          if (!saveCategory) {
+            return res.status(400).json({
+              errors: [
+                {
+                  msg: 'Error saving category database'
+                }
+              ],
+              errorData: error,
+              status: 'failed'
+            });
+          }
+          return res.status(200).json({
+            category: saveCategory,
+            status: 'success',
+            message: 'you succeeded in uploading category with image'
+          });
+        } catch (error) {
+          return res.status(500).json({
+            errors: [
+              {
+                msg: 'You cannnot save same name. Please try again.'
+              }
+            ],
+            errorData: error,
+            status: 'failed'
+          });
+        }
+      });
+    } catch (error) {
+      return res.status(500).json({
+        errors: [
+          {
+            msg: ' Server Error'
+          }
+        ],
+        errorData: error,
+        status: 'failed'
+      });
+    }
+  } else {
+    return res.status(200).json({
+      category: updateCategoy,
+      status: 'success',
+      message: 'you succeeded in uploading category without image'
+    });
+  }
+};
+
+exports.remove = async (req, res) => {
+  console.log('ここまできています。');
+  const { slug } = req.params;
+  const removedCategory = await Category.findOneAndRemove({ slug });
+
+  if (!removedCategory) {
+    return res.status(400).json({
+      errors: [
+        {
+          msg: `Could not delet category by this slug ${slug}`
+        }
+      ],
+      status: 'failed'
+    });
+  }
+
+  const deleteParams = {
+    Bucket: 'hacker-stack-contents',
+    Key: `category/${removedCategory.image.key}`
+  };
+
+  s3.deleteObject(deleteParams, (error, data) => {
+    if (error) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: `Error in deleting to s3 file this category/${removedCategory.image.key}`
+          }
+        ],
+        errorData: error,
+        status: 'failed'
+      });
+    } else {
+      console.log('this image deleted', data);
+    }
+  });
+
+  return res.status(200).json({
+    category: removedCategory,
+    status: 'success',
+    message: 'you succeeded in removing category and s3 storage image'
+  });
+};

@@ -34,14 +34,14 @@ router
   .route('/category/:slug')
   .post(categoryController.read)
   .patch(
-    decodedTokenIntoMiddleware,
+    ...decodedTokenIntoMiddleware(),
     categoryUpdateValidator,
     runValidation,
     adminMiddleware,
     categoryController.create
   )
   .delete(
-    decodedTokenIntoMiddleware,
+    ...decodedTokenIntoMiddleware(),
     adminMiddleware,
     categoryController.remove
   );

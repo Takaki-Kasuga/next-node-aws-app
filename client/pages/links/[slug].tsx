@@ -95,7 +95,7 @@ const Links: FC<LinksProps> = ({
       return link._id === response.data.links._id;
     });
     const cloneAllLinks = [...allLinks];
-    cloneAllLinks.splice(tagetObjectIndex, 1, response.data.links);
+    cloneAllLinks[tagetObjectIndex].clicks = response.data.links.clicks;
     setAllLinks([...cloneAllLinks]);
   };
 
@@ -219,7 +219,7 @@ export const getStaticProps: GetStaticProps = async (
 export const getStaticPaths = async () => {
   console.log('Regenerating...(getStaticPath)');
   const response = await axios.get(`${API}/categories`);
-  const pathsWithParams = response.data.allCategoryLists.map((list: any) => {
+  const pathsWithParams = response.data.categories.map((list: any) => {
     return { params: { slug: list.slug } };
   });
   console.log('pathsWithParams', pathsWithParams);

@@ -7,13 +7,17 @@ import {
 import { RootState } from '../../app/store';
 
 // import API
-import { addCategoryAPI } from './categoryAPI';
+import {
+  addCategoryAPI,
+  getCategoriesAPI,
+  deleteCategoriesAPI
+} from './categoryAPI';
 
 // helper
 import { successAlertFunc } from '../../helpers/successAlertFunc';
 import { errorHandling } from '../../helpers/errorHandling';
 
-interface CategoryReturnData {
+interface CategoryData {
   image: {
     url: string;
     key: string;
@@ -29,26 +33,14 @@ interface CategoryReturnData {
 
 // Define a type for the slice state
 interface CategoryState {
-  saveCategory: CategoryReturnData;
+  categories: CategoryData[];
   message: string;
   status: 'success' | 'loading' | 'failed' | 'default';
 }
 
 // Define the initial state using that type
 const initialState: CategoryState = {
-  saveCategory: {
-    image: {
-      url: '',
-      key: ''
-    },
-    _id: '',
-    name: '',
-    content: '',
-    slug: '',
-    createdAt: '',
-    updatedAt: '',
-    __v: 0
-  },
+  categories: [],
   message: '',
   status: 'default'
 };
@@ -65,7 +57,7 @@ interface ThunkConfig {
 
 //@Desc   Register User
 export const addCategoryAsync = createAsyncThunk<
-  CategoryReturnData,
+  CategoryData,
   {
     name: string;
     content: string;
@@ -92,6 +84,42 @@ export const addCategoryAsync = createAsyncThunk<
   }
 );
 
+//@Desc   Get Categories
+export const getCategoriesAsync = createAsyncThunk<
+  CategoryData[],
+  undefined,
+  ThunkConfig
+>('auth/getCategoriesAsync', async (_, { dispatch, rejectWithValue }) => {
+  console.log('ここまできているよん');
+  try {
+    const response = await getCategoriesAPI();
+    return response.data.categories as CategoryData[];
+  } catch (error) {
+    console.log('エラーですt', error);
+    return errorHandling({ error, dispatch, rejectWithValue });
+  }
+});
+
+//@Desc    Delete Categories
+export const deleteCategoriesAsync = createAsyncThunk<
+  CategoryData,
+  { slug: string; token: string },
+  ThunkConfig
+>(
+  'auth/deleteCategoriesAsync',
+  async (deleteCategoryData, { dispatch, rejectWithValue }) => {
+    console.log('ここまできているよん');
+    try {
+      const response = await deleteCategoriesAPI(deleteCategoryData);
+      console.log('response.data', response.data);
+      return response.data.category as CategoryData;
+    } catch (error) {
+      console.log('エラーですt', error);
+      return errorHandling({ error, dispatch, rejectWithValue });
+    }
+  }
+);
+
 export const categorySlice = createSlice({
   name: 'category',
   // `createSlice` will infer the state type from the `initialState` argument
@@ -111,12 +139,56 @@ export const categorySlice = createSlice({
       })
       .addCase(
         addCategoryAsync.fulfilled,
-        (state: any, action: PayloadAction<CategoryReturnData>) => {
-          return { ...state, ...action.payload };
+        (state, action: PayloadAction<CategoryData>) => {
+          state.categories.push(action.payload);
+          return { ...state, status: 'success' };
         }
       )
       .addCase(
         addCategoryAsync.rejected,
+        (state: any, action: PayloadAction<unknown>) => {
+          const { status, message } = action.payload as Rejected;
+          console.log('action.payload', action.payload);
+          return { ...state, status, message };
+        }
+      )
+      .addCase(getCategoriesAsync.pending, (state) => {
+        return { ...state, status: 'loading' };
+      })
+      .addCase(
+        getCategoriesAsync.fulfilled,
+        (state, action: PayloadAction<CategoryData[]>) => {
+          return { ...state, categories: action.payload, status: 'success' };
+        }
+      )
+      .addCase(
+        getCategoriesAsync.rejected,
+        (state: any, action: PayloadAction<unknown>) => {
+          const { status, message } = action.payload as Rejected;
+          console.log('action.payload', action.payload);
+          return { ...state, status, message };
+        }
+      )
+      .addCase(deleteCategoriesAsync.pending, (state) => {
+        return { ...state, status: 'loading' };
+      })
+      .addCase(
+        deleteCategoriesAsync.fulfilled,
+        (state, action: PayloadAction<CategoryData>) => {
+          const deletedCategories = state.categories.filter((category) => {
+            return category._id !== action.payload._id;
+          });
+
+          console.log('deletedCategories', deletedCategories);
+          return {
+            ...state,
+            categories: deletedCategories,
+            status: 'success'
+          };
+        }
+      )
+      .addCase(
+        deleteCategoriesAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
           console.log('action.payload', action.payload);
