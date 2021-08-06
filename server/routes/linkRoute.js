@@ -34,15 +34,19 @@ router.route('/links').get(linkController.list);
 router.route('/click-count').put(linkController.clickCount);
 
 router
-  .route('/link/:slug')
+  .route('/link/:linkId')
   .get(linkController.read)
-  .patch(
-    decodedTokenIntoMiddleware,
+  .put(
+    ...decodedTokenIntoMiddleware(),
     linkUpdateValidator,
     runValidation,
     authMiddleware,
-    linkController.create
+    linkController.update
   )
-  .delete(decodedTokenIntoMiddleware, authMiddleware, linkController.remove);
+  .delete(
+    ...decodedTokenIntoMiddleware(),
+    authMiddleware,
+    linkController.remove
+  );
 
 module.exports = router;

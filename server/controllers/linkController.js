@@ -8,7 +8,8 @@ const { v4: uuidv4 } = require('uuid');
 exports.create = async (req, res) => {
   const { title, url, categories, type, medium } = req.body;
   console.table({ title, url, categories, type, medium });
-  const slug = url;
+  const slug = slugify(url);
+  console.log('slug', slug);
   let link = new Link({
     title,
     url,
@@ -79,9 +80,80 @@ exports.list = async (req, res) => {
     });
   }
 };
-exports.read = async (req, res) => {};
-exports.update = async (req, res) => {};
-exports.remove = async (req, res) => {};
+exports.read = async (req, res) => {
+  const { linkId } = req.params;
+  console.log('linkId,', linkId);
+  const getLink = await Link.findById(linkId)
+    .populate('postedBy', ['_id', 'name', 'username'])
+    .populate('categories', ['name', 'slug']);
+  if (!getLink) {
+    return res.status(400).json({
+      errors: [
+        {
+          msg: 'Error finding the link'
+        }
+      ],
+      status: 'failed'
+    });
+  }
+  console.log('getLink', getLink);
+  res.status(200).json({
+    link: getLink,
+    status: 'success',
+    message: 'you succeeded in deleting the link'
+  });
+};
+exports.update = async (req, res) => {
+  const { linkId } = req.params;
+  const { title, url, categories, type, medium } = req.body;
+  const updateLink = await Link.findByIdAndUpdate(
+    linkId,
+    {
+      title,
+      url,
+      categories,
+      type,
+      medium
+    },
+    { new: true }
+  );
+  if (!updateLink) {
+    return res.status(400).json({
+      errors: [
+        {
+          msg: 'Error updating the link'
+        }
+      ],
+      status: 'failed'
+    });
+  }
+  res.status(200).json({
+    privateLinks: updateLink,
+    status: 'success',
+    message: 'you succeeded in updating the link'
+  });
+};
+exports.remove = async (req, res) => {
+  const { linkId } = req.params;
+  const deletedLink = await Link.findByIdAndRemove(linkId);
+  if (!deletedLink) {
+    return res.status(400).json({
+      errors: [
+        {
+          msg: 'Error removing the link'
+        }
+      ],
+      status: 'failed'
+    });
+  }
+  console.log('deletedLink', deletedLink);
+  res.status(200).json({
+    privateLinks: deletedLink,
+    status: 'success',
+    message: 'you succeeded in deleting the link'
+  });
+};
+
 exports.clickCount = async (req, res) => {
   const { linkId } = req.body;
   try {
