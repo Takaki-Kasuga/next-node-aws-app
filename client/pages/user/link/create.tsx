@@ -94,7 +94,7 @@ const Create: FC<CreateProps> = ({ getCategories, token }) => {
               {errors.categories && (
                 <ErrorMessage>{errors.categories.message}</ErrorMessage>
               )}
-              <ul className='h-72 overflow-scroll'>
+              <ul className='max-h-72 overflow-scroll'>
                 {getCategories.length > 0
                   ? getCategories.map((category, index) => {
                       return (

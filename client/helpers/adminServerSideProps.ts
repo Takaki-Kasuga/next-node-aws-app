@@ -53,9 +53,11 @@ export const adminServerSideProps = async (ctx: NextPageContext) => {
         }
       };
     }
+    console.log('response.data.links', response.data.links);
     return {
       props: {
         user: response.data.user,
+        userLinks: response.data.links,
         token
       }
     };
@@ -75,6 +77,17 @@ export const adminServerSideProps = async (ctx: NextPageContext) => {
           }
         };
       }
+    } else {
+      return {
+        props: {
+          user: 'No admin',
+          token
+        },
+        redirect: {
+          destination: '/',
+          permanent: false
+        }
+      };
     }
   }
 };
