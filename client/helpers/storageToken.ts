@@ -42,7 +42,7 @@ export const removeCokkie = (key: string) => {
 export const getCookieFromBrowser = (key: string) => {
   return cookie.get(key);
 };
-export const getCookieFromServer = (ctx: NextPageContext) => {
+export const getCookieFromServer = (ctx: NextPageContext|GetServerSidePropsContext ) => {
   if (nookies.get(ctx).token) {
     return nookies.get(ctx).token;
   } else {
@@ -52,7 +52,7 @@ export const getCookieFromServer = (ctx: NextPageContext) => {
 
 export const getCokkie = (
   key: string | null,
-  ctx?: NextPageContext | GetServerSidePropsContext | GetStaticPropsContext
+  ctx?: NextPageContext | GetServerSidePropsContext
 ) => {
   console.log('process.browser', process.browser);
   return process.browser

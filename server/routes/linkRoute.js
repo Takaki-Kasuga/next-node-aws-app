@@ -6,6 +6,8 @@ const linkController = require('../controllers/linkController');
 
 // middleware
 const { authMiddleware } = require('../middlewares/auth/authMiddleware');
+const { adminMiddleware } = require('../middlewares/auth/adminMiddleware');
+const { canUpdateDeleteLink } = require('../middlewares/auth/identifyUserLink');
 
 const {
   decodedTokenIntoMiddleware
@@ -30,7 +32,9 @@ router
     linkController.create
   );
 
-router.route('/links').get(linkController.list);
+router
+  .route('/links')
+  .post(...decodedTokenIntoMiddleware(), adminMiddleware, linkController.list);
 router.route('/click-count').put(linkController.clickCount);
 
 router
@@ -41,11 +45,28 @@ router
     linkUpdateValidator,
     runValidation,
     authMiddleware,
+    canUpdateDeleteLink,
     linkController.update
   )
   .delete(
     ...decodedTokenIntoMiddleware(),
     authMiddleware,
+    canUpdateDeleteLink,
+    linkController.remove
+  );
+
+router
+  .route('/link/admin/:linkId')
+  .put(
+    ...decodedTokenIntoMiddleware(),
+    linkUpdateValidator,
+    runValidation,
+    adminMiddleware,
+    linkController.update
+  )
+  .delete(
+    ...decodedTokenIntoMiddleware(),
+    adminMiddleware,
     linkController.remove
   );
 

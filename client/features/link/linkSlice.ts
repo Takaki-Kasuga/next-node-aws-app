@@ -13,7 +13,7 @@ import { createLinkAPI } from './linkAPI';
 import { successAlertFunc } from '../../helpers/successAlertFunc';
 import { errorHandling } from '../../helpers/errorHandling';
 
-interface SaveLinkData {
+interface CreateLinkData {
   categories: string[];
   type: string;
   medium: string;
@@ -30,27 +30,14 @@ interface SaveLinkData {
 
 // Define a type for the slice state
 interface CategoryState {
-  saveLink: SaveLinkData;
+  link: CreateLinkData[];
   message: string;
   status: 'success' | 'loading' | 'failed' | 'default';
 }
 
 // Define the initial state using that type
 const initialState: CategoryState = {
-  saveLink: {
-    categories: [],
-    type: '',
-    medium: '',
-    clicks: 0,
-    _id: '',
-    title: '',
-    url: '',
-    slug: '',
-    postedBy: '',
-    createdAt: '',
-    updatedAt: '',
-    __v: 0
-  },
+  link: [],
   message: '',
   status: 'default'
 };
@@ -106,8 +93,8 @@ export const linkSlice = createSlice({
     defaultStatus: (state) => {
       return { ...state, status: 'default' };
     },
-    decrement: (state) => {
-      return state;
+    addAllLinks: (state, action) => {
+      return { ...state, link: [...state.link, ...action.payload] };
     }
   },
   extraReducers: (builder) => {
@@ -118,8 +105,8 @@ export const linkSlice = createSlice({
       .addCase(
         createLinkAsync.fulfilled,
         (state: any, action: PayloadAction<CategoryState>) => {
-          const { status, message, saveLink } = action.payload;
-          return { ...state, saveLink, status, message };
+          const { status, message, link } = action.payload;
+          return { ...state, link: [...state.link, link], status, message };
         }
       )
       .addCase(
@@ -133,7 +120,7 @@ export const linkSlice = createSlice({
   }
 });
 
-export const { defaultStatus, decrement } = linkSlice.actions;
+export const { defaultStatus, addAllLinks } = linkSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const linkStateSlice = (state: RootState) => state.link;

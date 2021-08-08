@@ -15,6 +15,7 @@ exports.decodedTokenIntoMiddleware = () => {
     }),
     function (err, req, res, next) {
       if (err.name === 'UnauthorizedError') {
+        console.log('UnauthorizedError');
         return res
           .status(401)
           .json({ message: 'invalid token...', status: 'failed' });

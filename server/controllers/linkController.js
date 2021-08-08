@@ -34,7 +34,7 @@ exports.create = async (req, res) => {
       });
     }
     return res.status(200).json({
-      saveLink,
+      link: saveLink,
       status: 'success',
       message: 'you succeeded in creating a link'
     });
@@ -50,9 +50,19 @@ exports.create = async (req, res) => {
     });
   }
 };
+
 exports.list = async (req, res) => {
+  let limitFields = req.body.limit ? parseInt(req.body.limit) : 10;
+  let skipFields = req.body.skip ? parseInt(req.body.skip) : 0;
+
   try {
-    const allLinkLists = await Link.find();
+    const allLinkLists = await Link.find()
+      .populate('postedBy', ['_id', 'name', 'username'])
+      .populate('categories', ['name', 'slug'])
+      .sort({ createdAt: -1 })
+      .skip(skipFields)
+      .limit(limitFields);
+
     if (!allLinkLists) {
       return res.status(400).json({
         errors: [
@@ -64,7 +74,7 @@ exports.list = async (req, res) => {
       });
     }
     res.status(200).json({
-      allLinkLists,
+      links: allLinkLists,
       status: 'success',
       message: 'you succeeded in getting all link lists'
     });

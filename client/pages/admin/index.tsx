@@ -34,6 +34,11 @@ const AdminDashboard: FC<AdminServerSideProps> = ({ user, token }) => {
                 <a className='primary-btn'>All categories</a>
               </Link>
             </li>
+            <li>
+              <Link href='/admin/link/read'>
+                <a className='primary-btn'>All Links</a>
+              </Link>
+            </li>
           </ul>
         </div>
         <div className='w-9/12'></div>

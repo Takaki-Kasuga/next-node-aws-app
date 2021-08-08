@@ -213,7 +213,8 @@ export const getStaticProps: GetStaticProps = async (
       totalLinks: response.data.links.length,
       linksLimit: limit,
       linkSkip: skip
-    }
+    },
+    revalidate: 1800
   };
 };
 export const getStaticPaths = async () => {
