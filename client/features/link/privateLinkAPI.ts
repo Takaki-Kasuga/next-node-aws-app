@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API } from '../../config/config';
+import { isAuth } from '../../helpers/storageToken';
 
 interface DeletePrivateLinkAPITypes {
   privateLinkId: string;
@@ -44,5 +45,11 @@ export const updatePrivateLinkAPI = ({
   };
   const data = { title, url, categories, type, medium };
 
-  return axios.put(`${API}/link/${privateLinkId}`, data, config);
+  if (isAuth() && isAuth().role === 'admin') {
+    console.log('管理者権限');
+    return axios.put(`${API}/link/admin/${privateLinkId}`, data, config);
+  } else {
+    console.log('ユーザー権限');
+    return axios.put(`${API}/link/${privateLinkId}`, data, config);
+  }
 };

@@ -138,11 +138,12 @@ exports.update = async (req, res) => {
     });
   }
   res.status(200).json({
-    privateLinks: updateLink,
+    link: updateLink,
     status: 'success',
     message: 'you succeeded in updating the link'
   });
 };
+
 exports.remove = async (req, res) => {
   const { linkId } = req.params;
   const deletedLink = await Link.findByIdAndRemove(linkId);
@@ -158,7 +159,7 @@ exports.remove = async (req, res) => {
   }
   console.log('deletedLink', deletedLink);
   res.status(200).json({
-    privateLinks: deletedLink,
+    link: deletedLink,
     status: 'success',
     message: 'you succeeded in deleting the link'
   });

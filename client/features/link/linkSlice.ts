@@ -30,14 +30,27 @@ interface CreateLinkData {
 
 // Define a type for the slice state
 interface CategoryState {
-  link: CreateLinkData[];
+  link: CreateLinkData;
   message: string;
   status: 'success' | 'loading' | 'failed' | 'default';
 }
 
 // Define the initial state using that type
 const initialState: CategoryState = {
-  link: [],
+  link: {
+    categories: [],
+    type: '',
+    medium: '',
+    clicks: 0,
+    _id: '',
+    title: '',
+    url: '',
+    slug: '',
+    postedBy: '',
+    createdAt: '',
+    updatedAt: '',
+    __v: 0
+  },
   message: '',
   status: 'default'
 };
@@ -92,9 +105,6 @@ export const linkSlice = createSlice({
   reducers: {
     defaultStatus: (state) => {
       return { ...state, status: 'default' };
-    },
-    addAllLinks: (state, action) => {
-      return { ...state, link: [...state.link, ...action.payload] };
     }
   },
   extraReducers: (builder) => {
@@ -106,7 +116,7 @@ export const linkSlice = createSlice({
         createLinkAsync.fulfilled,
         (state: any, action: PayloadAction<CategoryState>) => {
           const { status, message, link } = action.payload;
-          return { ...state, link: [...state.link, link], status, message };
+          return { ...state, link, status, message };
         }
       )
       .addCase(
@@ -120,7 +130,7 @@ export const linkSlice = createSlice({
   }
 });
 
-export const { defaultStatus, addAllLinks } = linkSlice.actions;
+export const { defaultStatus } = linkSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const linkStateSlice = (state: RootState) => state.link;

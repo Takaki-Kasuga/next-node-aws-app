@@ -1,6 +1,8 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { GetServerSidePropsContext } from 'next';
+import Link from 'next/link';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 
 // npm package
 import axios from 'axios';
@@ -23,10 +25,18 @@ import { API } from '../../../config/config';
 import { getCokkie } from '../../../helpers/storageToken';
 import { isAxiosError } from '../../../helpers/axiosError';
 
+// slice
+import {
+  addLinks,
+  linksStateSlice,
+  deleteLinkAsync
+} from '../../../features/link/linksSlice';
+
 type LinksRes = {
   categories: {
     _id: string;
     name: string;
+    slug: string;
   }[];
   type: string;
   medium: string;
@@ -60,10 +70,15 @@ const Links: FC<LinksProps> = ({
   linksLimit,
   linkSkip
 }) => {
-  const [allLinks, setAllLinks] = useState<LinksRes>(links);
+  const dispatch = useAppDispatch();
+  const linksState = useAppSelector(linksStateSlice);
   const [limit, setLimit] = useState<number>(linksLimit);
   const [skip, setSkip] = useState<number>(linkSkip);
   const [size, setSize] = useState<number>(totalLinks);
+
+  useEffect(() => {
+    dispatch(addLinks(links));
+  }, []);
 
   const loadMore = async () => {
     if (size >= limit) {
@@ -82,20 +97,27 @@ const Links: FC<LinksProps> = ({
         },
         config
       );
-      console.log('size', size);
-      console.log('limit', limit);
-      console.log('これから非同期通信で持ってきます');
-      console.log('response.data.links', response.data.links);
-      setAllLinks([...allLinks, ...response.data.links]);
-      setSize(response.data.links.length);
+      const additionalResponseLink = response.data.links as LinksRes;
+      dispatch(addLinks(additionalResponseLink));
+      setSize(additionalResponseLink.length);
       setSkip(toSkip);
     }
   };
+
+  const confirmDelete = (linkId: string) => {
+    console.log('Delet > ', linkId);
+    if (window.confirm('Are you sure you want to delete')) {
+      if (token) {
+        dispatch(deleteLinkAsync({ linkId, token }));
+      }
+    }
+  };
+
   return (
     <Header>
       <PageTitle>All Links</PageTitle>
       <div>
-        {allLinks.map((link, index) => {
+        {linksState.links.map((link, index) => {
           return (
             <article key={index} className='bg-blue-200 p-5 rounded mb-5'>
               <div className='md:flex md:justify-between md:items-center mb-5'>
@@ -127,6 +149,19 @@ const Links: FC<LinksProps> = ({
                     </span>
                   );
                 })}
+                <Link href={`/user/link/${link._id}`}>
+                  <a className='inline-block bg-transparent hover:bg-green-500 text-green-700 font-semibold hover:text-white py-2 px-4 border border-green-500 hover:border-transparent rounded'>
+                    Update
+                  </a>
+                </Link>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    confirmDelete(link._id);
+                  }}
+                  className='inline-block bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded'>
+                  Delete
+                </button>
               </div>
             </article>
           );

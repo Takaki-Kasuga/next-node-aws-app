@@ -5,6 +5,7 @@ import dangerAlertReducer from '../features/alert/dangerAlertSlice';
 import successAlertReducer from '../features/alert/successAlertSlice';
 import linkReducer from '../features/link/linkSlice';
 import privateLinkReducer from '../features/link/privateLinkSlice';
+import linksReducer from '../features/link/linksSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
     dangerAlert: dangerAlertReducer,
     successAlert: successAlertReducer,
     privateLink: privateLinkReducer,
-    link: linkReducer
+    link: linkReducer,
+    links: linksReducer
   }
 });
 

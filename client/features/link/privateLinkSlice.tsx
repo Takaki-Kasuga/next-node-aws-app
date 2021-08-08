@@ -72,7 +72,7 @@ export const deletePrivateLinkAsync = createAsyncThunk<
         response
       });
       console.log('response.data', response.data);
-      return response.data.privateLinks;
+      return response.data.link;
     } catch (error) {
       console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
@@ -104,7 +104,7 @@ export const updatePrivateLinkAsync = createAsyncThunk<
         response
       });
       console.log('response.data', response.data);
-      return response.data.privateLinks;
+      return response.data.link;
     } catch (error) {
       console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
