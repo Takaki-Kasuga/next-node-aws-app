@@ -5,6 +5,7 @@ interface RegisterUserAPITypes {
   name: string;
   email: string;
   password: string;
+  categories: string[];
 }
 interface LoginUserAPITypes {
   email: string;
@@ -22,16 +23,28 @@ interface ResetPasswordAPITypes {
 export const registerUserAPI = ({
   name,
   email,
-  password
+  password,
+  categories
 }: RegisterUserAPITypes) => {
   const config = {
     headers: {
       'Content-Type': 'application/json'
     }
   };
-  const body = JSON.stringify({ name, email, password });
+  const body = JSON.stringify({ name, email, password, categories });
 
   return axios.post(`${API}/auth/register`, body, config);
+};
+
+export const activateUserAPI = (token: string) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+  const body = JSON.stringify({ token });
+
+  return axios.post(`${API}/auth/register/activate`, body, config);
 };
 
 export const loginUserAPI = ({ email, password }: LoginUserAPITypes) => {
@@ -56,7 +69,10 @@ export const forgotPasswordAPI = ({ email }: ForgotPasswordAPITypes) => {
   return axios.patch(`${API}/auth/forgot-password`, body, config);
 };
 
-export const resetPasswordAPI = ({ newPassword,token }: ResetPasswordAPITypes) => {
+export const resetPasswordAPI = ({
+  newPassword,
+  token
+}: ResetPasswordAPITypes) => {
   const config = {
     headers: {
       'Content-Type': 'application/json'

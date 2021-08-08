@@ -9,7 +9,7 @@ import Router from 'next/router';
 
 // import API
 import {
-  registerUserAPI,
+  registerUserAPI,activateUserAPI,
   loginUserAPI,
   forgotPasswordAPI,
   resetPasswordAPI
@@ -63,13 +63,31 @@ interface RegisterReturnData {
 //@Desc   Register User
 export const registerUserAsync = createAsyncThunk<
   RegisterReturnData,
-  { name: string; email: string; password: string },
+  { name: string; email: string; password: string; categories: string[] },
   ThunkConfig
 >(
   'auth/registerUserAsync',
   async (registerFormData, { dispatch, rejectWithValue }) => {
     try {
       const response = await registerUserAPI(registerFormData);
+      successAlertFunc({
+        dispatch,
+        response
+      });
+      console.log('response.data', response.data);
+      return response.data;
+    } catch (error) {
+      return errorHandling({ error, dispatch, rejectWithValue });
+    }
+  }
+);
+
+//@Desc   Activate User
+export const activateUserAsync = createAsyncThunk<any, string, ThunkConfig>(
+  'auth/registerUserAsync',
+  async (activateToken, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await activateUserAPI(activateToken);
       successAlertFunc({
         dispatch,
         response

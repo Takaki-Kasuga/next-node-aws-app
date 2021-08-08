@@ -1,9 +1,19 @@
 const fs = require('fs');
 const Link = require('../models/link');
+const User = require('../models/user');
+const Category = require('../models/category');
 const slugify = require('slugify');
 const formidable = require('formidable');
 const AWS = require('aws-sdk');
-const { v4: uuidv4 } = require('uuid');
+const { linkPublishedParams } = require('../helpers/email');
+
+// @document  https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/ses-examples-sending-email.html
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+});
+const ses = new AWS.SES({ apiVersion: '2010-12-01' });
 
 exports.create = async (req, res) => {
   const { title, url, categories, type, medium } = req.body;
@@ -33,7 +43,48 @@ exports.create = async (req, res) => {
         status: 'failed'
       });
     }
-    return res.status(200).json({
+
+    const findUsers = await User.find({ categories: { $in: categories } });
+    console.log('findUsers', findUsers);
+    if (!findUsers) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Error finding users to send email to on link piblish'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+    const findCategories = await Category.find({ _id: { $in: categories } });
+    if (!categories) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Error finding categories to send email to on link piblish'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+    console.log('findCategories', findCategories);
+    saveLink.categories = findCategories;
+    console.log('saveLink.categories', saveLink.categories);
+    for (let i = 0; i < findUsers.length; i++) {
+      const params = linkPublishedParams(findUsers[i].email, saveLink);
+      const sendEmail = ses.sendEmail(params).promise();
+
+      sendEmail
+        .then((success) => {
+          console.log('email submitted to SES ', success);
+          return;
+        })
+        .catch((failure) => {
+          console.log('error on email submitted to SES  ', failure);
+          return;
+        });
+    }
+    res.status(200).json({
       link: saveLink,
       status: 'success',
       message: 'you succeeded in creating a link'

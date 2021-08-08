@@ -1,12 +1,15 @@
 import React, { FC, useState, useEffect } from 'react';
+import { useAppDispatch } from '../../../app/hooks';
 
 import { useRouter } from 'next/router';
 
 // components
 import { Header } from '../../../components/layout';
-
 // npm package
 import jwt from 'jsonwebtoken';
+
+// slice
+import { activateUserAsync } from '../../../features/auth/authSlice';
 
 interface RegisterToken {
   email: string;
@@ -17,6 +20,7 @@ interface RegisterToken {
 }
 
 const ActivateAccount: FC<{ router: string }> = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const [state, setState] = useState({
     name: '',
@@ -29,12 +33,14 @@ const ActivateAccount: FC<{ router: string }> = () => {
     if (token) {
       const decodedToken = jwt.decode(token) as RegisterToken;
       console.log('decodedToken', decodedToken);
-      setState({ ...state, name: decodedToken.name });
+      setState({ ...state, name: decodedToken.name, token });
     }
   }, [router]);
 
   const activateAccount = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
+    console.log('state.token', state.token);
+    dispatch(activateUserAsync(state.token));
     // token dispatch to http://localhost:8000/api/auth/register/activate
   };
 

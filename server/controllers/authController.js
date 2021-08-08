@@ -25,7 +25,7 @@ const ses = new AWS.SES({ apiVersion: '2010-12-01' });
 // @Desc       Register new User & send Email
 exports.register = async (req, res) => {
   console.log('register req.body', req.body);
-  const { name, email, password } = req.body;
+  const { name, email, password, categories } = req.body;
 
   // check if user exists or not
   try {
@@ -38,9 +38,13 @@ exports.register = async (req, res) => {
         .json({ message: 'Email is taken', status: 'failed' });
 
     // generate token with user email and _password
-    const token = jwt.sign({ name, email, password }, process.env.JWT_SECRET, {
-      expiresIn: '10m'
-    });
+    const token = jwt.sign(
+      { name, email, password, categories },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: '10m'
+      }
+    );
 
     // Send email
     const params = registerEnailParams(email, token);
@@ -79,7 +83,7 @@ exports.registerActivate = async (req, res) => {
   const { token } = req.body;
   console.log('token', token);
   try {
-    const { name, email, password } = jwt.decode(token);
+    const { name, email, password, categories } = jwt.decode(token);
     console.log('jwt.decode(token);', jwt.decode(token));
 
     // create unique 12 character
@@ -103,7 +107,8 @@ exports.registerActivate = async (req, res) => {
       name,
       email,
       hashed_password,
-      salt
+      salt,
+      categories
     });
 
     console.log('dbUser', dbUser);
