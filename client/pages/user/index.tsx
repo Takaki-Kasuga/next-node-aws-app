@@ -70,7 +70,6 @@ const UserDashboard: FC<DashboardProps> = ({ user, userLinks, token }) => {
   const confirmDelete = (linkId: string) => {
     if (window.confirm('Are you sure you want to delete?')) {
       dispatch(deletePrivateLinkAsync({ privateLinkId: linkId, token }));
-      console.log('linkId', linkId);
     }
   };
   return (
@@ -91,17 +90,12 @@ const UserDashboard: FC<DashboardProps> = ({ user, userLinks, token }) => {
               Update Profile
             </a>
           </Link>
-          <Link href='/user/profile/update'>
-            <a className='inline-block bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
-              Profile update
-            </a>
-          </Link>
         </div>
         <div className='md:col-span-3'>
           <h2>Your Links</h2>
 
           {privateLink.privateLinks.length === 0 ? (
-            <DynamicLoadingSpinner />
+            <h1>No Post Links</h1>
           ) : (
             privateLink.privateLinks.map((link, index) => {
               return (
@@ -185,7 +179,6 @@ export const getServerSideProps = async (ctx: NextPageContext) => {
     const response = await axios.get(`${publicRuntimeConfig.API}/user`, config);
     // control auth and routing
 
-    console.log('response user', response.data);
     return {
       props: {
         user: response.data.user,
@@ -194,7 +187,6 @@ export const getServerSideProps = async (ctx: NextPageContext) => {
       }
     };
   } catch (error) {
-    console.log('エラーが起きています。');
     if (isAxiosError(error)) {
       if (error.response!.status === 401) {
         return {

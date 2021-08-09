@@ -34,8 +34,6 @@ export const addCategoryAPI = ({
   body.append('content', content);
   body.append('image', image);
 
-  console.log('body', body);
-
   return axios.post(`${API}/category`, body, config);
 };
 
@@ -58,8 +56,6 @@ export const updateCategoryAPI = ({
   body.append('content', content);
   body.append('image', image);
 
-  console.log('body', body);
-
   return axios.put(`${API}/category/${slug}`, body, config);
 };
 
@@ -74,14 +70,11 @@ export const deleteCategoriesAPI = ({
   slug: string;
   token: string;
 }) => {
-  console.log('token', token);
   const config = {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     }
   };
-  console.log('ここまできています');
-  console.log('slug', slug);
   return axios.delete(`${API}/category/${slug}`, config);
 };

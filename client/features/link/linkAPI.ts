@@ -33,7 +33,5 @@ export const createLinkAPI = ({
     medium
   });
 
-  console.log('body', body);
-
   return axios.post(`${API}/link`, body, config);
 };

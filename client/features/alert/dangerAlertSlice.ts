@@ -59,7 +59,6 @@ export const dangerAlertSlice = createSlice({
   initialState,
   reducers: {
     setDangerAlert: (state, action: PayloadAction<DangerAlertStatus>) => {
-      console.log('発火しています。');
       state.status = 'success';
       state.dangerAlertStatus.push(action.payload);
       return state;

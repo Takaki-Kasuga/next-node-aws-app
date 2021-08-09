@@ -9,7 +9,6 @@ export const resizeFile = (image: any) => {
       100,
       0,
       (uri) => {
-        console.log('uri', uri);
         resolve(uri);
       },
       'file'

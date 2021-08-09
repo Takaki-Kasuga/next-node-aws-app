@@ -24,9 +24,6 @@ export const errorHandling = ({
   rejectWithValue
 }: ErrorHandlingProps) => {
   if (isAxiosError(error)) {
-    console.log('Axiosのエラー');
-    console.log('error.isAxiosError', error.isAxiosError);
-    console.log('error', error.response);
     // helper function
     const { id, errorObject, message } = prepareErrorData(
       uuidv4(),

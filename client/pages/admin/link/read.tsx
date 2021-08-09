@@ -105,7 +105,6 @@ const Links: FC<LinksProps> = ({
   };
 
   const confirmDelete = (linkId: string) => {
-    console.log('Delet > ', linkId);
     if (window.confirm('Are you sure you want to delete')) {
       if (token) {
         dispatch(deleteLinkAsync({ linkId, token }));
@@ -183,9 +182,7 @@ const Links: FC<LinksProps> = ({
 };
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-  console.log('Regenerating...(getStaticProps) in admin/link/read');
   const token = getCokkie(null, ctx);
-  console.log('token', token);
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -203,7 +200,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   try {
     const responseAdmin = await axios.get(`${API}/admin`, config);
-    console.log('responseAdmin.data', responseAdmin.data);
     // control auth and routing
     if (responseAdmin.data.user.role !== 'admin') {
       return {
@@ -224,7 +220,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       },
       config
     );
-    console.log('response', response.data.links);
     return {
       props: {
         token,
@@ -236,7 +231,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     };
   } catch (error) {
     if (isAxiosError(error)) {
-      console.log('error.response', error.response);
       if (error.response!.status === 401) {
         return {
           props: {

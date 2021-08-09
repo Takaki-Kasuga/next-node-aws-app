@@ -26,20 +26,17 @@ const ActivateAccount: FC<{ router: string }> = () => {
     name: '',
     token: ''
   });
-  console.log('router', router);
 
   useEffect(() => {
     let token = router.query.token as string | undefined;
     if (token) {
       const decodedToken = jwt.decode(token) as RegisterToken;
-      console.log('decodedToken', decodedToken);
       setState({ ...state, name: decodedToken.name, token });
     }
   }, [router, state]);
 
   const activateAccount = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();
-    console.log('state.token', state.token);
     dispatch(activateUserAsync(state.token));
     // token dispatch to http://localhost:8000/api/auth/register/activate
   };
@@ -56,7 +53,7 @@ const ActivateAccount: FC<{ router: string }> = () => {
           onClick={(e) => {
             activateAccount(e);
           }}
-          className='primary-btn'>
+          className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
           Activate Account
         </button>
       </div>

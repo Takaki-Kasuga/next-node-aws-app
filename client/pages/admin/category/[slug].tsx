@@ -47,7 +47,6 @@ const resizeFile = (image: any) => {
       100,
       0,
       (uri) => {
-        console.log('uri', uri);
         resolve(uri);
       },
       'file'
@@ -68,7 +67,6 @@ interface UpdateCategoryFormType {
 const Update: FC<any> = ({ slug, oldCategory, token }) => {
   const dispatch = useAppDispatch();
   const category = useAppSelector(categoryStateSlice);
-  console.log('token', token);
 
   useEffect(() => {
     return () => {
@@ -93,9 +91,6 @@ const Update: FC<any> = ({ slug, oldCategory, token }) => {
 
   const onSubmit: SubmitHandler<UpdateCategoryFormType> = async (formData) => {
     if (token) {
-      console.log('通過しました。');
-      console.log(formData);
-
       const resizeImage = await resizeFile(formData.image[0]);
 
       const updateCategoryFormData = _.extend(formData, {
@@ -103,7 +98,6 @@ const Update: FC<any> = ({ slug, oldCategory, token }) => {
         token,
         image: resizeImage
       });
-      console.log('updateCategoryFormData', updateCategoryFormData);
       dispatch(updateCategoryAsync(updateCategoryFormData));
       if (category.status === 'success') {
         reset();
@@ -141,8 +135,6 @@ const Update: FC<any> = ({ slug, oldCategory, token }) => {
               required: 'Please input content description',
               validate: (value) => {
                 const stringNum = striptags(value);
-                console.log('stringNum', stringNum);
-                console.log('stringNumlength', stringNum.length);
                 return (
                   stringNum.length > 20 ||
                   'Content must be at least 20 characters long'
@@ -172,7 +164,6 @@ const Update: FC<any> = ({ slug, oldCategory, token }) => {
             register={register('image', {
               required: 'Please upload image file',
               validate: (value) => {
-                console.log('value', value[0].type.slice(0, 5));
                 return (
                   value[0].type.slice(0, 5) === 'image' ||
                   'You can upload only image files. ex:.gif,.png,.jpeg and so on.'
@@ -184,8 +175,10 @@ const Update: FC<any> = ({ slug, oldCategory, token }) => {
               : 'Upload image'}
           </InputText>
         </div>
-        <button type='submit' className='primary-btn'>
-           Update Category
+        <button
+          type='submit'
+          className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
+          Update Category
         </button>
       </form>
     </Header>
@@ -242,9 +235,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       }
     };
   } catch (error) {
-    console.log('エラーが起きています。');
     if (isAxiosError(error)) {
-      console.log('error.response', error.response);
       if (error.response!.status === 401) {
         return {
           props: {

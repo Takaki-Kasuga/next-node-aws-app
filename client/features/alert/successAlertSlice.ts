@@ -59,7 +59,6 @@ export const successAlertSlice = createSlice({
   initialState,
   reducers: {
     setSuccessAlert: (state, action: PayloadAction<SuccessAlertStatus>) => {
-      console.log('発火しています。');
       state.status = 'success';
       state.successAlertStatus.push(action.payload);
       return state;

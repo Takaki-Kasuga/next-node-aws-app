@@ -71,17 +71,12 @@ const Create: FC<CreateProps> = ({ getCategories, token }) => {
     defaultValues: { type: 'Free', medium: 'Video', categories: [] }
   });
   const onSubmit: SubmitHandler<AddLinkFormType> = (formData) => {
-    console.log('通過しました。');
-    console.table(formData);
     const createLinkFormData = _.merge(formData, { token });
-    console.log('createLinkFormData', createLinkFormData);
     dispatch(createLinkAsync(createLinkFormData));
     if (link.status === 'success') {
-      console.log('初期化されました。');
       reset();
     }
   };
-  console.log('errors', errors);
   return (
     <Header>
       {link.status === 'loading' && <DynamicLoading />}
@@ -192,7 +187,7 @@ const Create: FC<CreateProps> = ({ getCategories, token }) => {
             <button
               disabled={link.status === 'loading' ? true : false}
               type='submit'
-              className='primary-btn'>
+              className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
               Register
             </button>
           </div>

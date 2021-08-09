@@ -56,10 +56,6 @@ const Home: FC<HomeProps> = ({ categories, popularLinks }) => {
       linkId
     });
     const tagetObjectIndex = allLinks.findIndex((link) => {
-      console.log(
-        'link._id = response.data.links._id',
-        link._id === response.data.links._id
-      );
       return link._id === response.data.links._id;
     });
     const cloneAllLinks = [...allLinks];
@@ -73,7 +69,7 @@ const Home: FC<HomeProps> = ({ categories, popularLinks }) => {
         {categories.map((category, index) => {
           return (
             <Link href={`/links/${category.slug}`} key={index}>
-              <a className='primary-btn block md:w-4/12 m-5 md:m-0 md:mb-5'>
+              <a className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded block md:w-4/12 m-5 md:m-0 md:mb-5'>
                 <div>
                   <Image
                     src={category.image.url}
@@ -138,7 +134,6 @@ const Home: FC<HomeProps> = ({ categories, popularLinks }) => {
 };
 
 export const getStaticProps = async () => {
-  console.log('Re-generating...');
   try {
     const response = await axios.get(`${publicRuntimeConfig.API}/categories`);
     const popularLinksResponse = await axios.get(
@@ -146,7 +141,6 @@ export const getStaticProps = async () => {
     );
     const categories = response.data.categories;
     const popularLinks = popularLinksResponse.data.links;
-    console.log('popularLinks', popularLinks);
 
     return {
       props: {

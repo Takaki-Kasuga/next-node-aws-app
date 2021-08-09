@@ -20,7 +20,6 @@ interface UserData {
 
 // set in cookie
 export const setCookie = (key: string, value: string) => {
-  console.log('process.browser', process.browser);
   if (process.browser) {
     cookie.set(key, value, {
       expires: 1
@@ -30,7 +29,6 @@ export const setCookie = (key: string, value: string) => {
 
 // remove from cookie
 export const removeCokkie = (key: string) => {
-  console.log('process.browser', process.browser);
   if (process.browser) {
     cookie.remove(key);
   }
@@ -56,7 +54,6 @@ export const getCokkie = (
   key: string | null,
   ctx?: NextPageContext | GetServerSidePropsContext
 ) => {
-  console.log('process.browser', process.browser);
   return process.browser
     ? getCookieFromBrowser(key!)
     : getCookieFromServer(ctx!);
@@ -64,7 +61,6 @@ export const getCokkie = (
 
 // set in localstorage
 export const setLocalStorage = (key: string, value: UserData) => {
-  console.log('process.browser', process.browser);
   if (process.browser) {
     localStorage.setItem(key, JSON.stringify(value));
   }
@@ -72,7 +68,6 @@ export const setLocalStorage = (key: string, value: UserData) => {
 
 // remove from localstorage
 export const removeStorage = (key: string) => {
-  console.log('process.browser', process.browser);
   if (process.browser) {
     localStorage.removeItem(key);
   }
@@ -87,7 +82,6 @@ export const authenticate = (response: LoginReturnData, next: callbackType) => {
 export const isAuth = () => {
   if (process.browser) {
     const cookieChecked = getCokkie('token');
-    console.log('cookieChecked', cookieChecked);
     if (cookieChecked) {
       if (localStorage.getItem('user')) {
         return JSON.parse(localStorage.getItem('user')!);

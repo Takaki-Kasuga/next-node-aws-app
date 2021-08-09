@@ -64,17 +64,14 @@ export const deletePrivateLinkAsync = createAsyncThunk<
 >(
   'auth/addPrivateLinkAsync',
   async (privateLinkDate, { dispatch, rejectWithValue }) => {
-    console.log('ここまできているよん');
     try {
       const response = await deletePrivateLinkAPI(privateLinkDate);
       successAlertFunc({
         dispatch,
         response
       });
-      console.log('response.data', response.data);
       return response.data.link;
     } catch (error) {
-      console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
@@ -96,17 +93,14 @@ export const updatePrivateLinkAsync = createAsyncThunk<
 >(
   'auth/updatePrivateLinkAsync',
   async (updateLinkDate, { dispatch, rejectWithValue }) => {
-    console.log('ここまできているよん');
     try {
       const response = await updatePrivateLinkAPI(updateLinkDate);
       successAlertFunc({
         dispatch,
         response
       });
-      console.log('response.data', response.data);
       return response.data.link;
     } catch (error) {
-      console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
@@ -129,8 +123,6 @@ export const privateLinkSlice = createSlice({
       .addCase(
         deletePrivateLinkAsync.fulfilled,
         (state, action: PayloadAction<PrivateLink>) => {
-          console.log('action.payload', action.payload);
-          console.log('state.privateLinks', state.privateLinks);
           const deletedPrivateLinks = state.privateLinks.filter(
             (privateLink) => {
               return privateLink._id !== action.payload._id;
@@ -147,7 +139,6 @@ export const privateLinkSlice = createSlice({
         deletePrivateLinkAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
-          console.log('action.payload', action.payload);
           return { ...state, status: 'failed', message };
         }
       )
@@ -157,8 +148,6 @@ export const privateLinkSlice = createSlice({
       .addCase(
         updatePrivateLinkAsync.fulfilled,
         (state, action: PayloadAction<PrivateLink>) => {
-          console.log('action.payload', action.payload);
-          console.log('state.privateLinks', state.privateLinks);
           const updatePrivateLinks = state.privateLinks.filter(
             (privateLink) => {
               return privateLink._id !== action.payload._id;
@@ -175,7 +164,6 @@ export const privateLinkSlice = createSlice({
         updatePrivateLinkAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
-          console.log('action.payload', action.payload);
           return { ...state, status: 'failed', message };
         }
       );

@@ -40,17 +40,13 @@ const ResetPassword: FC = () => {
 
   const onSubmit: SubmitHandler<ResetPasswordFormType> = (formData) => {
     const newFormData = _.extend(formData, { token });
-    console.log('通過しました。');
-    console.table(newFormData);
     dispatch(resetPasswordAsync(newFormData));
     reset();
   };
-  console.log('watch', watch());
 
   useEffect(() => {
     const decoded = jwt.decode(token) as { name: string } | null;
     if (decoded) {
-      console.log('decoded', decoded);
       setDecoded({ ...decoded, name: decoded.name });
     }
   }, [router, token]);
@@ -87,7 +83,9 @@ const ResetPassword: FC = () => {
           </InputText>
         </div>
         {/* {JSON.stringify(isAuth())} */}
-        <button type='submit' className='primary-btn'>
+        <button
+          type='submit'
+          className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
           Reset Password
         </button>
       </form>

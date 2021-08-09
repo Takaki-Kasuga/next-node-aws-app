@@ -82,17 +82,14 @@ export const createLinkAsync = createAsyncThunk<
 >(
   'auth/createLinkAsync',
   async (createLinkFormData, { dispatch, rejectWithValue }) => {
-    console.log('ここまできているよん');
     try {
       const response = await createLinkAPI(createLinkFormData);
       successAlertFunc({
         dispatch,
         response
       });
-      console.log('response.data', response.data);
       return response.data;
     } catch (error) {
-      console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
@@ -123,7 +120,6 @@ export const linkSlice = createSlice({
         createLinkAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
-          console.log('action.payload', action.payload);
           return { ...state, status: 'failed', message };
         }
       );

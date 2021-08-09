@@ -47,7 +47,6 @@ const resizeFile = (image: any) => {
       100,
       0,
       (uri) => {
-        console.log('uri', uri);
         resolve(uri);
       },
       'file'
@@ -64,8 +63,6 @@ interface CategoryFormType {
 const Create: FC<AdminServerSideProps> = ({ user, token }) => {
   const dispatch = useAppDispatch();
   const category = useAppSelector(categoryStateSlice);
-  console.log('user', user);
-  console.log('token', token);
 
   useEffect(() => {
     return () => {
@@ -87,16 +84,12 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
 
   const onSubmit: SubmitHandler<CategoryFormType> = async (formData) => {
     if (token) {
-      console.log('通過しました。');
-      console.log(formData);
-
       const resizeImage = await resizeFile(formData.image[0]);
 
       const addCategoryFormData = _.extend(formData, {
         token,
         image: resizeImage
       });
-      console.log('addCategoryFormData', addCategoryFormData);
       dispatch(addCategoryAsync(addCategoryFormData));
       if (category.status === 'success') {
         // reset();
@@ -134,7 +127,6 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
               required: 'Please input content description',
               validate: (value) => {
                 const stringNum = striptags(value);
-                console.log('stringNum', stringNum);
                 return (
                   stringNum.length > 20 ||
                   'Content must be at least 20 characters long'
@@ -177,7 +169,6 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
             register={register('image', {
               required: 'Please upload image file',
               validate: (value) => {
-                console.log('value', value[0].type.slice(0, 5));
                 return (
                   value[0].type.slice(0, 5) === 'image' ||
                   'You can upload only image files. ex:.gif,.png,.jpeg and so on.'
@@ -187,7 +178,9 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
             {watch('image') ? getValues('image')[0].name : 'Upload image'}
           </InputText>
         </div>
-        <button type='submit' className='primary-btn'>
+        <button
+          type='submit'
+          className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
           Create Category
         </button>
       </form>

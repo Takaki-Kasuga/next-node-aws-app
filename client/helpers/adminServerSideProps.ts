@@ -53,7 +53,6 @@ export const adminServerSideProps = async (ctx: NextPageContext) => {
         }
       };
     }
-    console.log('response.data.links', response.data.links);
     return {
       props: {
         user: response.data.user,
@@ -62,9 +61,7 @@ export const adminServerSideProps = async (ctx: NextPageContext) => {
       }
     };
   } catch (error) {
-    console.log('エラーが起きています。');
     if (isAxiosError(error)) {
-      console.log('error.response', error.response);
       if (error.response!.status === 401) {
         return {
           props: {

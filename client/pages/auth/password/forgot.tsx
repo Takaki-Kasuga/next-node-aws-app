@@ -31,8 +31,6 @@ const ForgotPassword: FC = () => {
   } = useForm<ForgotPasswordFormType>({ mode: 'onBlur' });
 
   const onSubmit: SubmitHandler<ForgotPasswordFormType> = (formData) => {
-    console.log('通過しました。');
-    console.table(formData);
     dispatch(forgotPasswordAsync(formData));
     reset();
   };
@@ -62,7 +60,9 @@ const ForgotPassword: FC = () => {
           </InputText>
         </div>
         {/* {JSON.stringify(isAuth())} */}
-        <button type='submit' className='primary-btn'>
+        <button
+          type='submit'
+          className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
           ForgotPassword
         </button>
       </form>

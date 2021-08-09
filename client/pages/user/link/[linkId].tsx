@@ -99,12 +99,8 @@ const Update: FC<ServerProps> = ({ token, link, categories }) => {
       medium: link.medium
     }
   });
-  console.log(watch('categories'));
 
   const onSubmit: SubmitHandler<UpdateLinkFormType> = (formData) => {
-    console.log('通過しました。');
-    console.table(formData);
-    console.log('formData.categories.length', formData.categories.length);
     if (typeof formData.categories === 'string') {
       formData.categories = [formData.categories] as unknown as string[];
     }
@@ -112,7 +108,6 @@ const Update: FC<ServerProps> = ({ token, link, categories }) => {
       token,
       privateLinkId: link._id
     });
-    console.log('createLinkFormData', createLinkFormData);
     dispatch(updatePrivateLinkAsync(createLinkFormData));
     //  if (link.status === 'success') {
     //    console.log('初期化されました。');
@@ -233,7 +228,7 @@ const Update: FC<ServerProps> = ({ token, link, categories }) => {
             <button
               // disabled={link.status === 'loading' ? true : false}
               type='submit'
-              className='primary-btn'>
+              className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
               Register
             </button>
           </div>
@@ -276,9 +271,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       `${publicRuntimeConfig.API}/categories`,
       config
     );
-
-    console.log('getLink', getLink);
-    console.log('getCategories', getCategories);
 
     if (!getLink || !getCategories) {
       return {

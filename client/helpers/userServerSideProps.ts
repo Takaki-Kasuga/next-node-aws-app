@@ -50,7 +50,6 @@ export const userServerSideProps = async (ctx: NextPageContext) => {
       }
     };
   } catch (error) {
-    console.log('エラーが起きています。');
     if (isAxiosError(error)) {
       if (error.response!.status === 401) {
         return {

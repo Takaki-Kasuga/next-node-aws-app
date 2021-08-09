@@ -46,10 +46,8 @@ export const updatePrivateLinkAPI = ({
   const data = { title, url, categories, type, medium };
 
   if (isAuth() && isAuth().role === 'admin') {
-    console.log('管理者権限');
     return axios.put(`${API}/link/admin/${privateLinkId}`, data, config);
   } else {
-    console.log('ユーザー権限');
     return axios.put(`${API}/link/${privateLinkId}`, data, config);
   }
 };

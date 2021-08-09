@@ -24,14 +24,12 @@ const ses = new AWS.SES({ apiVersion: '2010-12-01' });
 // @API ROUTE  /api/auth/register
 // @Desc       Register new User & send Email
 exports.register = async (req, res) => {
-  console.log('register req.body', req.body);
   const { name, email, password, categories } = req.body;
 
   // check if user exists or not
   try {
     const user = await User.findOne({ email });
     // user have been registerd
-    console.log('user', user);
     if (user)
       return res
         .status(401)

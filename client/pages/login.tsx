@@ -33,8 +33,6 @@ const Login: FC = () => {
   } = useForm<LoginFormType>({ mode: 'onBlur' });
 
   const onSubmit: SubmitHandler<LoginFormType> = (formData) => {
-    console.log('通過しました。');
-    console.table(formData);
     reset();
     dispatch(loginUserAsync(formData));
   };
@@ -58,7 +56,6 @@ const Login: FC = () => {
             Email adress
           </InputText>
         </div>
-        {JSON.stringify(isAuth())}
         <div className='mb-4'>
           <InputText
             id='password'
@@ -82,11 +79,15 @@ const Login: FC = () => {
           </InputText>
         </div>
         <div className='flex justify-between mt-10'>
-          <button type='submit' className='primary-btn'>
+          <button
+            type='submit'
+            className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
             Login
           </button>
           <Link href='/auth/password/forgot'>
-            <a className='danger-btn'>ForgotPassword</a>
+            <a className='inline-block bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded'>
+              ForgotPassword
+            </a>
           </Link>
         </div>
       </form>

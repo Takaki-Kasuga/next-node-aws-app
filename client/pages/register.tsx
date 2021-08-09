@@ -55,8 +55,6 @@ const Register: FC<RegisterProps> = ({ categories }) => {
   } = useForm<RegisterFormType>({ mode: 'onBlur' });
 
   const onSubmit: SubmitHandler<RegisterFormType> = (formData) => {
-    console.log('通過しました。');
-    console.table(formData);
     reset();
     dispatch(registerUserAsync(formData));
   };
@@ -141,7 +139,9 @@ const Register: FC<RegisterProps> = ({ categories }) => {
         {/* {errors.categories && (
           <ErrorMessage>{errors.categories.message}</ErrorMessage>
         )} */}
-        <button type='submit' className='primary-btn'>
+        <button
+          type='submit'
+          className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
           Register
         </button>
       </form>

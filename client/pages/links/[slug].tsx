@@ -115,10 +115,6 @@ const Links: FC<LinksProps> = ({
   const incrementClick = async (linkId: string) => {
     const response = await axios.put(`${API}/click-count`, { linkId });
     const tagetObjectIndex = allLinks.findIndex((link) => {
-      console.log(
-        'link._id = response.data.links._id',
-        link._id === response.data.links._id
-      );
       return link._id === response.data.links._id;
     });
     const cloneAllLinks = [...allLinks];
@@ -136,8 +132,6 @@ const Links: FC<LinksProps> = ({
       limit
     });
     setAllLinks([...allLinks, ...response.data.links]);
-    console.log('allLinks', allLinks);
-    console.log('response.data.links.length', response.data.links.length);
     setSize(response.data.links.length);
     setSkip(toSkip);
   };
@@ -287,7 +281,6 @@ interface SlugParams extends ParsedUrlQuery {
 export const getStaticProps: GetStaticProps = async (
   ctx: GetStaticPropsContext
 ) => {
-  console.log('Regenerating...(getStaticProps)');
   const skip = 0;
   const limit = 10;
   const { slug } = ctx.params as SlugParams;
@@ -295,7 +288,6 @@ export const getStaticProps: GetStaticProps = async (
   const getPopularLinksResponse = await axios.get(
     `${API}/links/popular/${slug}`
   );
-  console.log('getPopularLinksResponse', getPopularLinksResponse.data.links);
   return {
     props: {
       slug,
@@ -310,12 +302,10 @@ export const getStaticProps: GetStaticProps = async (
   };
 };
 export const getStaticPaths = async () => {
-  console.log('Regenerating...(getStaticPath)');
   const response = await axios.get(`${API}/categories`);
   const pathsWithParams = response.data.categories.map((list: any) => {
     return { params: { slug: list.slug } };
   });
-  console.log('pathsWithParams', pathsWithParams);
   return {
     paths: pathsWithParams,
     fallback: false

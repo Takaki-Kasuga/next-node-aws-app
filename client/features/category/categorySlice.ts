@@ -70,17 +70,14 @@ export const addCategoryAsync = createAsyncThunk<
 >(
   'auth/addCategoryAsync',
   async (addCategoryFormData, { dispatch, rejectWithValue }) => {
-    console.log('ここまできているよん');
     try {
       const response = await addCategoryAPI(addCategoryFormData);
       successAlertFunc({
         dispatch,
         response
       });
-      console.log('response.data.category', response.data.category);
       return response.data.category;
     } catch (error) {
-      console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
@@ -100,17 +97,14 @@ export const updateCategoryAsync = createAsyncThunk<
 >(
   'auth/updateCategoryAsync',
   async (updateCategoryFormData, { dispatch, rejectWithValue }) => {
-    console.log('ここまできているよん');
     try {
       const response = await updateCategoryAPI(updateCategoryFormData);
       successAlertFunc({
         dispatch,
         response
       });
-      console.log('response.data.category', response.data.category);
       return response.data.category;
     } catch (error) {
-      console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
@@ -122,12 +116,10 @@ export const getCategoriesAsync = createAsyncThunk<
   undefined,
   ThunkConfig
 >('auth/getCategoriesAsync', async (_, { dispatch, rejectWithValue }) => {
-  console.log('ここまできているよん');
   try {
     const response = await getCategoriesAPI();
     return response.data.categories as CategoryData[];
   } catch (error) {
-    console.log('エラーですt', error);
     return errorHandling({ error, dispatch, rejectWithValue });
   }
 });
@@ -140,13 +132,10 @@ export const deleteCategoriesAsync = createAsyncThunk<
 >(
   'auth/deleteCategoriesAsync',
   async (deleteCategoryData, { dispatch, rejectWithValue }) => {
-    console.log('ここまできているよん');
     try {
       const response = await deleteCategoriesAPI(deleteCategoryData);
-      console.log('response.data', response.data);
       return response.data.category as CategoryData;
     } catch (error) {
-      console.log('エラーですt', error);
       return errorHandling({ error, dispatch, rejectWithValue });
     }
   }
@@ -183,7 +172,6 @@ export const categorySlice = createSlice({
         addCategoryAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
-          console.log('action.payload', action.payload);
           return { ...state, status, message };
         }
       )
@@ -215,7 +203,6 @@ export const categorySlice = createSlice({
         updateCategoryAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
-          console.log('action.payload', action.payload);
           return { ...state, status, message };
         }
       )
@@ -232,7 +219,6 @@ export const categorySlice = createSlice({
         getCategoriesAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
-          console.log('action.payload', action.payload);
           return { ...state, status, message };
         }
       )
@@ -246,7 +232,6 @@ export const categorySlice = createSlice({
             return category._id !== action.payload._id;
           });
 
-          console.log('deletedCategories', deletedCategories);
           return {
             ...state,
             categories: deletedCategories,
@@ -258,7 +243,6 @@ export const categorySlice = createSlice({
         deleteCategoriesAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
           const { status, message } = action.payload as Rejected;
-          console.log('action.payload', action.payload);
           return { ...state, status, message };
         }
       );

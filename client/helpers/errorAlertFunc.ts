@@ -42,7 +42,6 @@ export const errorAlertFunc = (
       param: string;
       value: string;
     }) => {
-      console.log('処理が遠ています。');
       dispatch(
         setDangerAlert({
           id,

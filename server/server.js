@@ -6,7 +6,6 @@ const dotenv = require('dotenv');
 const connectDB = require('./database/db');
 // added env settings
 dotenv.config();
-console.log('dotenv.config();', dotenv.config());
 
 const app = express();
 
@@ -35,8 +34,6 @@ app.use('/api', userRouter);
 app.use('/api', categoryRouter);
 app.use('/api', linkRouter);
 
-console.log('process.env.PORT', process.env.PORT);
-// console.log('process.env', process.env);
 const port = process.env.PORT || 8000;
 
 app.listen(port, () => {

@@ -21,11 +21,9 @@ interface HeaderProps {
 }
 
 const handleStart = (url: string) => {
-  console.log(`Loading: ${url}`);
   NProgress.start();
 };
 const handleStop = () => {
-  console.log('handleStop');
   NProgress.done();
 };
 
@@ -37,7 +35,6 @@ const Header: FC<HeaderProps> = ({ children }) => {
     router.events.on('routeChangeError', handleStop);
 
     return () => {
-      console.log('Unmounted');
       router.events.off('routeChangeStart', handleStart);
       router.events.off('routeChangeComplete', handleStop);
       router.events.off('routeChangeError', handleStop);
@@ -58,11 +55,7 @@ const Header: FC<HeaderProps> = ({ children }) => {
             <a className='text-blue-50 hover:text-blue-800 '>Home</a>
           </Link>
         </li>
-        <li className=''>
-          <Link href='/user/link/create'>
-            <a className='text-blue-50 hover:text-blue-800 '>Submit a Link</a>
-          </Link>
-        </li>
+
         {!isAuth() ? (
           <Fragment>
             <li className='mr-6'>
@@ -79,29 +72,49 @@ const Header: FC<HeaderProps> = ({ children }) => {
         ) : null}
 
         {isAuth() && isAuth().role === 'admin' ? (
-          <li className='ml-auto'>
-            <Link href='/admin'>
-              <a className='text-blue-50 hover:text-blue-800'>
-                Admin: {isAuth().name}
-              </a>
-            </Link>
-          </li>
+          <Fragment>
+            <li className='mr-6'>
+              <Link href='/user/link/create'>
+                <a className='text-blue-50 hover:text-blue-800 '>
+                  Submit a Link
+                </a>
+              </Link>
+            </li>
+            <li className='mr-6'>
+              <Link href='/admin'>
+                <a className='text-blue-50 hover:text-blue-800'>
+                  Admin: {isAuth().name}
+                </a>
+              </Link>
+            </li>
+          </Fragment>
         ) : null}
         {isAuth() && isAuth().role === 'subscriber' ? (
-          <li className='ml-auto'>
-            <Link href='/user'>
-              <a className='text-blue-50 hover:text-blue-800'>
-                User: {isAuth().name}
-              </a>
-            </Link>
-          </li>
+          <Fragment>
+            <li className='mr-6'>
+              <Link href='/user'>
+                <a className='text-blue-50 hover:text-blue-800'>
+                  User: {isAuth().name}
+                </a>
+              </Link>
+            </li>
+            <li className='mr-6'>
+              <Link href='/user/link/create'>
+                <a className='text-blue-50 hover:text-blue-800 '>
+                  Submit a Link
+                </a>
+              </Link>
+            </li>
+          </Fragment>
         ) : null}
         {isAuth() ? (
-          <li className='mx-6'>
-            <a onClick={logout} className='text-blue-50 hover:text-blue-800'>
-              Logout
-            </a>
-          </li>
+          <Fragment>
+            <li className='mr-6'>
+              <a onClick={logout} className='text-blue-50 hover:text-blue-800'>
+                Logout
+              </a>
+            </li>
+          </Fragment>
         ) : null}
       </ul>
       <DangerAlert />

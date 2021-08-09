@@ -30,7 +30,6 @@ const Read: FC<AdminServerSideProps> = ({ user, token }) => {
   }, [dispatch]);
 
   const confirmDelete = (slug: string) => {
-    console.log('Delet > ', slug);
     if (window.confirm('Are you sure you want to delete')) {
       if (token) {
         dispatch(deleteCategoriesAsync({ slug, token }));

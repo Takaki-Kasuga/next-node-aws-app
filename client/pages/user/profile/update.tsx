@@ -79,8 +79,6 @@ const UpdateProfile: FC<UpdateProfileProps> = ({ categories, user, token }) => {
     interface Token {
       token: string;
     }
-    console.log('通過しました。');
-    console.table(formData);
     const newFormData = { ...formData, token };
     dispatch(updateUserAsync(newFormData));
   };
@@ -141,7 +139,9 @@ const UpdateProfile: FC<UpdateProfileProps> = ({ categories, user, token }) => {
         {/* {errors.categories && (
           <ErrorMessage>{errors.categories.message}</ErrorMessage>
         )} */}
-        <button className='primary-btn' type='submit'>
+        <button
+          className='bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'
+          type='submit'>
           Register
         </button>
       </form>
@@ -179,7 +179,6 @@ export const getServerSideProps = async (ctx: NextPageContext) => {
       }
     };
   } catch (error) {
-    console.log('エラーが起きています。');
     if (isAxiosError(error)) {
       if (error.response!.status === 401) {
         return {

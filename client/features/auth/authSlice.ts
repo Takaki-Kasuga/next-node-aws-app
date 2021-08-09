@@ -76,7 +76,6 @@ export const registerUserAsync = createAsyncThunk<
         dispatch,
         response
       });
-      console.log('response.data', response.data);
       return response.data;
     } catch (error) {
       return errorHandling({ error, dispatch, rejectWithValue });
@@ -98,7 +97,6 @@ export const updateUserAsync = createAsyncThunk<
         dispatch,
         response
       });
-      console.log('response.data', response.data);
       return response.data;
     } catch (error) {
       return errorHandling({ error, dispatch, rejectWithValue });
@@ -116,7 +114,6 @@ export const activateUserAsync = createAsyncThunk<any, string, ThunkConfig>(
         dispatch,
         response
       });
-      console.log('response.data', response.data);
       return response.data;
     } catch (error) {
       return errorHandling({ error, dispatch, rejectWithValue });
@@ -228,7 +225,6 @@ export const authSlice = createSlice({
       .addCase(
         registerUserAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
-          console.log('action.payload', action.payload);
           const { status, message } = action.payload as Rejected;
           return { ...state, status, message };
         }
@@ -246,7 +242,6 @@ export const authSlice = createSlice({
       .addCase(
         loginUserAsync.rejected,
         (state: any, action: PayloadAction<unknown>) => {
-          console.log('action.payload', action.payload);
           const { status, message } = action.payload as Rejected;
           return { ...state, status, message };
         }
