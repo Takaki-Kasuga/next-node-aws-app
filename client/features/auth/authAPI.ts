@@ -7,6 +7,13 @@ interface RegisterUserAPITypes {
   password: string;
   categories: string[];
 }
+
+interface UpdateUserAPITypes {
+  name: string;
+  email: string;
+  categories: string[];
+  token:string
+}
 interface LoginUserAPITypes {
   email: string;
   password: string;
@@ -34,6 +41,23 @@ export const registerUserAPI = ({
   const body = JSON.stringify({ name, email, password, categories });
 
   return axios.post(`${API}/auth/register`, body, config);
+};
+
+export const updateUserAPI = ({
+  name,
+  email,
+  categories,
+  token
+}: UpdateUserAPITypes) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+       'Authorization': `Bearer ${token}`
+    }
+  };
+  const body = JSON.stringify({ name, email, categories });
+
+  return axios.put(`${API}/user`, body, config);
 };
 
 export const activateUserAPI = (token: string) => {

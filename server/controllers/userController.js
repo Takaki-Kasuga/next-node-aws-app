@@ -52,3 +52,45 @@ exports.read = async (req, res) => {
     });
   }
 };
+
+exports.update = async (req, res) => {
+  const { name, categories } = req.body;
+
+  try {
+    const updateUser = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      { name, categories },
+      { new: true }
+    );
+
+    if (!updateUser) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Could not find user to update'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+
+    console.log('updateUser', updateUser);
+    updateUser.hashed_password = undefined;
+    updateUser.salt = undefined;
+    return res.status(200).json({
+      user: updateUser,
+      status: 'success',
+      message: 'you succeeded in updateing user information'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      errors: [
+        {
+          msg: 'Server Error'
+        }
+      ],
+      errorData: error,
+      status: 'failed'
+    });
+  }
+};

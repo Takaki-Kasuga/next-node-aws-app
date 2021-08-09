@@ -112,14 +112,3 @@ const Header: FC<HeaderProps> = ({ children }) => {
 };
 
 export default Header;
-
-{
-  /* Import CSS for nprogress */
-}
-{
-  /* <link
-          rel='stylesheet'
-          type='text/css'
-          href='https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.css'
-        /> */
-}

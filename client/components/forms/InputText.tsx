@@ -13,6 +13,7 @@ interface InputTextProps {
   placeholder: string;
   id: string;
   children: string;
+  disabled?: boolean;
   hidden?: boolean;
   accept?: string;
 }
@@ -24,9 +25,11 @@ const InputText: FC<InputTextProps> = ({
   placeholder,
   id,
   children,
+  disabled,
   hidden,
   accept
-}) => {  return (
+}) => {
+  return (
     <Fragment>
       <label
         className={
@@ -38,6 +41,7 @@ const InputText: FC<InputTextProps> = ({
       <input
         hidden={hidden}
         accept={accept}
+        disabled={disabled}
         className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
         id={id}
         autoComplete='on'
@@ -49,6 +53,6 @@ const InputText: FC<InputTextProps> = ({
   );
 };
 
-InputText.defaultProps = { hidden: false };
+InputText.defaultProps = { hidden: false, disabled: false };
 
 export default InputText;

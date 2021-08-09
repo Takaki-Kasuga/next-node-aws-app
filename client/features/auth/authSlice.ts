@@ -9,7 +9,9 @@ import Router from 'next/router';
 
 // import API
 import {
-  registerUserAPI,activateUserAPI,
+  registerUserAPI,
+  activateUserAPI,
+  updateUserAPI,
   loginUserAPI,
   forgotPasswordAPI,
   resetPasswordAPI
@@ -82,6 +84,28 @@ export const registerUserAsync = createAsyncThunk<
   }
 );
 
+//@Desc   Register User
+export const updateUserAsync = createAsyncThunk<
+  any,
+  { name: string; email: string; categories: string[]; token: string },
+  ThunkConfig
+>(
+  'auth/registerUserAsync',
+  async (updateFormData, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await updateUserAPI(updateFormData);
+      successAlertFunc({
+        dispatch,
+        response
+      });
+      console.log('response.data', response.data);
+      return response.data;
+    } catch (error) {
+      return errorHandling({ error, dispatch, rejectWithValue });
+    }
+  }
+);
+
 //@Desc   Activate User
 export const activateUserAsync = createAsyncThunk<any, string, ThunkConfig>(
   'auth/registerUserAsync',
@@ -92,6 +116,7 @@ export const activateUserAsync = createAsyncThunk<any, string, ThunkConfig>(
         dispatch,
         response
       });
+      updateUser;
       console.log('response.data', response.data);
       return response.data;
     } catch (error) {

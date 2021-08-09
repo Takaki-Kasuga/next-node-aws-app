@@ -11,6 +11,12 @@ const {
 const { adminMiddleware } = require('../middlewares/auth/adminMiddleware');
 const { authMiddleware } = require('../middlewares/auth/authMiddleware');
 
+// import validator
+const {
+  userUpdateValidator
+} = require('../middlewares/validators/authValidator.js');
+const { runValidation } = require('../middlewares/validators/index');
+
 router
   .route('/user')
   .get(...decodedTokenIntoMiddleware(), authMiddleware, userController.read);
@@ -18,5 +24,15 @@ router
 router
   .route('/admin')
   .get(...decodedTokenIntoMiddleware(), adminMiddleware, userController.read);
+
+router
+  .route('/user')
+  .put(
+    ...decodedTokenIntoMiddleware(),
+    userUpdateValidator,
+    runValidation,
+    adminMiddleware,
+    userController.update
+  );
 
 module.exports = router;

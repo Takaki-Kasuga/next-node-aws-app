@@ -141,6 +141,7 @@ exports.list = async (req, res) => {
     });
   }
 };
+
 exports.read = async (req, res) => {
   const { linkId } = req.params;
   console.log('linkId,', linkId);
@@ -242,6 +243,93 @@ exports.clickCount = async (req, res) => {
       links: updateLinkClicks,
       status: 'success',
       message: 'you succeeded in incrementing click number'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      errors: [
+        {
+          msg: 'Server Error'
+        }
+      ],
+      errorData: error,
+      status: 'failed'
+    });
+  }
+};
+
+exports.popular = async (req, res) => {
+  try {
+    const getPopularLinks = await Link.find()
+      .populate('postedBy', ['_id', 'name', 'username'])
+      .populate('categories', ['name'])
+      .sort({ clicks: -1 })
+      .limit(3);
+
+    console.log('getPopularLinks', getPopularLinks);
+    if (!getPopularLinks) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Links not founded'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+    res.status(200).json({
+      links: getPopularLinks,
+      status: 'success',
+      message: 'you succeeded in getting popular links'
+    });
+  } catch (error) {
+    return res.status(500).json({
+      errors: [
+        {
+          msg: 'Server Error'
+        }
+      ],
+      errorData: error,
+      status: 'failed'
+    });
+  }
+};
+
+exports.popularInCategory = async (req, res) => {
+  const { category } = req.params;
+  console.log('category', category);
+
+  try {
+    const getPopularCategory = await Category.findOne({ slug: category });
+    console.log('getPopularCategory', getPopularCategory);
+    if (!getPopularCategory) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Coud not load categories'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+    const getPopularLinks = await Link.find({ categories: getPopularCategory })
+      .populate('postedBy', ['_id', 'name', 'username'])
+      .populate('categories', ['name'])
+      .sort({ clicks: -1 })
+      .limit(3);
+    if (!getPopularLinks) {
+      return res.status(400).json({
+        errors: [
+          {
+            msg: 'Links not founded'
+          }
+        ],
+        status: 'failed'
+      });
+    }
+    res.status(200).json({
+      links: getPopularLinks,
+      status: 'success',
+      message: 'you succeeded in getting popular links'
     });
   } catch (error) {
     return res.status(500).json({

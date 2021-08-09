@@ -91,6 +91,11 @@ const UserDashboard: FC<DashboardProps> = ({ user, userLinks, token }) => {
               Update Profile
             </a>
           </Link>
+          <Link href='/user/profile/update'>
+            <a className='inline-block bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded'>
+              Profile update
+            </a>
+          </Link>
         </div>
         <div className='md:col-span-3'>
           <h2>Your Links</h2>

@@ -32,6 +32,9 @@ router
     linkController.create
   );
 
+router.route('/links/popular').get(linkController.popular);
+router.route('/links/popular/:category').get(linkController.popularInCategory);
+
 router
   .route('/links')
   .post(...decodedTokenIntoMiddleware(), adminMiddleware, linkController.list);

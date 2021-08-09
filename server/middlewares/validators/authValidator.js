@@ -27,3 +27,7 @@ exports.resetPasswordValidator = [
   }),
   body('token', 'Token is required!').not().isEmpty()
 ];
+
+exports.userUpdateValidator = [
+  body('name', 'Name is required!').not().isEmpty()
+];
