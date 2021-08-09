@@ -35,7 +35,7 @@ const ActivateAccount: FC<{ router: string }> = () => {
       console.log('decodedToken', decodedToken);
       setState({ ...state, name: decodedToken.name, token });
     }
-  }, [router]);
+  }, [router, state]);
 
   const activateAccount = (e: React.MouseEvent<HTMLButtonElement>): void => {
     e.preventDefault();

@@ -8,7 +8,7 @@ import { Header } from '../../../components/layout/index';
 import { InputText } from '../../../components/forms/index';
 import { ErrorMessage } from '../../../components/styles/index';
 import { PageTitle } from '../../../components/atoms/index';
-import { BlueButton } from '../../../components/styles/index';
+// import { BlueButton } from '../../../components/styles/index';
 
 // npm package
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -138,9 +138,9 @@ const UpdateProfile: FC<UpdateProfileProps> = ({ categories, user, token }) => {
               })
             : null}
         </ul>
-        {errors.categories && (
+        {/* {errors.categories && (
           <ErrorMessage>{errors.categories.message}</ErrorMessage>
-        )}
+        )} */}
         <button className='primary-btn' type='submit'>
           Register
         </button>

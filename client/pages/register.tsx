@@ -138,9 +138,9 @@ const Register: FC<RegisterProps> = ({ categories }) => {
               })
             : null}
         </ul>
-        {errors.categories && (
+        {/* {errors.categories && (
           <ErrorMessage>{errors.categories.message}</ErrorMessage>
-        )}
+        )} */}
         <button type='submit' className='primary-btn'>
           Register
         </button>

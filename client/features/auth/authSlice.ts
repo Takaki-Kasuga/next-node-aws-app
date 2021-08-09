@@ -116,7 +116,6 @@ export const activateUserAsync = createAsyncThunk<any, string, ThunkConfig>(
         dispatch,
         response
       });
-      updateUser;
       console.log('response.data', response.data);
       return response.data;
     } catch (error) {

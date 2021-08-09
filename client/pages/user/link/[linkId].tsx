@@ -129,9 +129,9 @@ const Update: FC<ServerProps> = ({ token, link, categories }) => {
           <div>
             <div className='mb-5'>
               <h3 className='text-gray-500 mb-5'>Categories</h3>
-              {errors.categories && (
+              {/* {errors.categories && (
                 <ErrorMessage>{errors.categories.message}</ErrorMessage>
-              )}
+              )} */}
               <ul className='max-h-72 overflow-scroll'>
                 {categories.length > 0
                   ? categories.map((category, index) => {

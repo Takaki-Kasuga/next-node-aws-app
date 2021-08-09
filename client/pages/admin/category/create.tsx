@@ -71,7 +71,7 @@ const Create: FC<AdminServerSideProps> = ({ user, token }) => {
     return () => {
       dispatch(defaultStatus());
     };
-  }, []);
+  }, [dispatch]);
   const {
     reset,
     control,

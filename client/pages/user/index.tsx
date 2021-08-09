@@ -65,7 +65,7 @@ const UserDashboard: FC<DashboardProps> = ({ user, userLinks, token }) => {
 
   useEffect(() => {
     dispatch(addPrivateLink(userLinks));
-  }, [dispatch]);
+  }, [dispatch, userLinks]);
 
   const confirmDelete = (linkId: string) => {
     if (window.confirm('Are you sure you want to delete?')) {
@@ -76,7 +76,7 @@ const UserDashboard: FC<DashboardProps> = ({ user, userLinks, token }) => {
   return (
     <Header>
       <PageTitle>
-        {user.name}'s Dashboard /{' '}
+        {user.name}s Dashboard /{' '}
         <span className='text-red-500'>{user.role}</span>
       </PageTitle>
       <div className='md:grid md:grid-cols-4 md:gap-4'>

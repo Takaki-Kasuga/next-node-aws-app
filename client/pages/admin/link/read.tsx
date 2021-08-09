@@ -78,7 +78,7 @@ const Links: FC<LinksProps> = ({
 
   useEffect(() => {
     dispatch(addLinks(links));
-  }, []);
+  }, [dispatch, links]);
 
   const loadMore = async () => {
     if (size >= limit) {
